@@ -13,6 +13,7 @@ function App() {
   const [next, setNext] = useState("X");
   
   function onClickBox(index) {
+    if (board[index] == "") {
       if (piece == 0) {
         setBoard(prevList => Object.assign([...prevList], {[index]: "X"}));
         setPiece(1);
@@ -25,6 +26,7 @@ function App() {
         setNext("X");
         socket.emit('turn', { index: index, piece: "O", nextPiece: 0, nextNext: "X"});
       }
+    }
   }
 
   // The function inside useEffect is only run whenever any variable in the array
