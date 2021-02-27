@@ -1,7 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
 import './Board.css';
-import { Board } from './Board.js'
+import { Board } from './Board.js';
+import { Message } from './Message.js';
 import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
 
@@ -12,6 +13,8 @@ function App() {
   const [piece, setPiece] = useState(0);
   const [next, setNext] = useState("X");
   const [isClickable, setIsClickable] = useState(true);
+  const [gameEnd, setGameEnd] = useState(false);
+  const [message, setMessage] = useState("");
   
   function onClickBox(index) {
     if (!isClickable) {
@@ -34,10 +37,13 @@ function App() {
       const outcome = calculateWinner(boardAfterTurn);
       if (outcome !== null) {
         setIsClickable(false);
+        setGameEnd(true);
         if (outcome !== "tie") {
           socket.emit('end', {outcome: outcome, text: "The winner is: "});
+          setMessage("The winner is " + outcome);
         } else {
           socket.emit('end', {outcome: outcome, text: "There was a "});
+          setMessage("There was a " + outcome);
         }
       }
     }
@@ -86,13 +92,15 @@ function App() {
       console.log(data);
       
       setIsClickable(false);
+      setGameEnd(true);
+      setMessage(data.text + data.outcome);
     });
   }, []);
 
   return (
     <div>
         <Board board={board} click={(index) => onClickBox(index)}/>
-        <p> Next turn: {next}</p>
+        <Message next={next} end={gameEnd} message={message}/>
     </div>
   );
 }
