@@ -11,10 +11,15 @@ function App() {
   const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
   const [piece, setPiece] = useState(0);
   const [next, setNext] = useState("X");
+  const [isClickable, setIsClickable] = useState(true);
   
   function onClickBox(index) {
-    if (board[index] == "") {
-      if (piece == 0) {
+    if (!isClickable) {
+      return
+    }
+    var boardAfterTurn = Object.assign([...board], {[index]: next});
+    if (board[index] === "") {
+      if (piece === 0) {
         setBoard(prevList => Object.assign([...prevList], {[index]: "X"}));
         setPiece(1);
         setNext("O");
@@ -26,8 +31,40 @@ function App() {
         setNext("X");
         socket.emit('turn', { index: index, piece: "O", nextPiece: 0, nextNext: "X"});
       }
+      const outcome = calculateWinner(boardAfterTurn);
+      if (outcome !== null) {
+        setIsClickable(false);
+        if (outcome !== "tie") {
+          socket.emit('end', {outcome: outcome, text: "The winner is: "});
+        } else {
+          socket.emit('end', {outcome: outcome, text: "There was a "});
+        }
+      }
     }
   }
+  
+  function calculateWinner(squares) {
+    if (!squares.includes("")) {
+      return "tie"
+    }
+    const lines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+    for (let i = 0; i < lines.length; i++) {
+      const [a, b, c] = lines[i];
+      if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+        return squares[a];
+      }
+    }
+    return null;
+}
 
   // The function inside useEffect is only run whenever any variable in the array
   // (passed as the second arg to useEffect) changes. Since this array is empty
@@ -43,6 +80,12 @@ function App() {
       setBoard(prevList => Object.assign([...prevList], {[data.index]: data.piece}));
       setPiece(data.nextPiece);
       setNext(data.nextNext);
+    });
+    socket.on('end', (data) => {
+      console.log('End event received!');
+      console.log(data);
+      
+      setIsClickable(false);
     });
   }, []);
 
