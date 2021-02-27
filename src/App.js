@@ -3,6 +3,7 @@ import './App.css';
 import './Board.css';
 import { Board } from './Board.js';
 import { Message } from './Message.js';
+import { calculateWinner } from './calculateWinner.js';
 import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
 
@@ -48,29 +49,6 @@ function App() {
       }
     }
   }
-  
-  function calculateWinner(squares) {
-    if (!squares.includes("")) {
-      return "tie"
-    }
-    const lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
-    for (let i = 0; i < lines.length; i++) {
-      const [a, b, c] = lines[i];
-      if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-        return squares[a];
-      }
-    }
-    return null;
-}
 
   // The function inside useEffect is only run whenever any variable in the array
   // (passed as the second arg to useEffect) changes. Since this array is empty
@@ -81,8 +59,7 @@ function App() {
     socket.on('turn', (data) => {
       console.log('Turn event received!');
       console.log(data);
-      // If the server sends a message (on behalf of another client), then we
-      // add it to the list of messages to render it on the UI.
+      
       setBoard(prevList => Object.assign([...prevList], {[data.index]: data.piece}));
       setPiece(data.nextPiece);
       setNext(data.nextNext);
