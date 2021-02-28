@@ -66,11 +66,27 @@ def on_turn(data): # data is whatever arg you pass in your emit call on client
     # the client that emmitted the event that triggered this function
     socketio.emit('turn',  data, broadcast=True, include_self=False)
     socketio.emit('switch', data, broadcast=True, include_self=True)
-    
+
+voted = []
 @socketio.on('end')
 def on_end(data): 
     print(str(data))
+    votes = { "vote": len(voted) }
     socketio.emit('end',  data, broadcast=True, include_self=False)
+    socketio.emit('voting', votes, broadcast=True, include_self=True)
+
+@socketio.on('vote')
+def on_vote(data):
+    username = data["username"]
+    if username in players and username not in voted:
+        print("Received vote from " + username)
+        voted.append(username)
+        votes = { "vote": len(voted) }
+        socketio.emit('voting', votes, broadcast=True, include_self=True)
+        if len(voted) == 2:
+            socketio.emit('again', votes, broadcast=True, include_self=True)
+            voted.clear()
+        
 
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 socketio.run(

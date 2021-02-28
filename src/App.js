@@ -28,6 +28,7 @@ function App() {
   const [players, setPlayers] = useState([]);
   const [spectators, setSpectators] = useState([]);
   const [type, setType] = useState(-1); // 0 for player x, 1 for player o, 2 for spectator, -1 for not logged in 
+  const [vote, setVote] = useState(0);
   
   const typeRef = useRef(null);
   const loginRef = useRef(null);
@@ -37,9 +38,8 @@ function App() {
   endRef.current = gameEnd;
   
   function onClickBox(index) {
-    if (!isClickable) {
-      return
-    }
+    if (!isClickable) {return;}
+    
     var boardAfterTurn = Object.assign([...board], {[index]: next});
     if (board[index] === "" && type !== 2) {
       if (type === 0) {
@@ -59,8 +59,9 @@ function App() {
         setIsClickable(false);
         setGameEnd(true);
         if (outcome !== "tie") {
-          socket.emit('end', {outcome: outcome, text: "The winner is: "});
-          setMessage("The winner is " + players[piece] + " (" + outcome + ")");
+          const text = "The winner is " + players[piece] + " (" + outcome + ")";
+          socket.emit('end', {outcome: outcome, text: text});
+          setMessage(text);
         } else {
           socket.emit('end', {outcome: outcome, text: "There was a "});
           setMessage("There was a " + outcome);
@@ -74,6 +75,11 @@ function App() {
       const pickedUsername = loginRef.current.value;
       socket.emit('requestLogin', {sid: sid, requestedUsername: pickedUsername});
     }
+  }
+  
+  function onClickPlayAgain() {
+    if (type === 2) {return;}
+    socket.emit('vote', {username: username});
   }
 
   // The function inside useEffect is only run whenever any variable in the array
@@ -122,7 +128,27 @@ function App() {
       
       setIsClickable(false);
       setGameEnd(true);
-      setMessage(data.text + data.outcome);
+      if (data.outcome == 'tie') {
+        setMessage(data.text + data.outcome);
+      } else {
+        setMessage(data.text);
+      }
+    });
+    socket.on('voting', (data) => {
+      console.log('Voting event received');
+      console.log(data);
+      setVote(data.vote);
+    });
+    socket.on('again', (data) => {
+      console.log('Game is restarting');
+      setBoard(board);
+      setGameEnd(false);
+      setPiece(0);
+      setNext(next);
+      setVote(0);
+      if (typeRef.current == 0) {
+        setIsClickable(true);
+      }
     });
   }, []);
   
@@ -137,7 +163,7 @@ function App() {
     return (
       <div>
         <Board board={board} click={(index) => onClickBox(index)}/>
-        <Message next={next} piece={piece} players={players} end={gameEnd} message={message}/>
+        <Message next={next} piece={piece} players={players} end={gameEnd} message={message} vote={vote} click={() => onClickPlayAgain()}/>
         <UsersList players={players} spectators={spectators} />
       </div>
     );
