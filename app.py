@@ -37,7 +37,7 @@ def createPlayerData(players, username_position, username):
         
     data = {
         "players": players,
-        "status": status,
+        "type": status,
         "position": username_position,
         "username": username
     }
@@ -63,6 +63,7 @@ def on_turn(data): # data is whatever arg you pass in your emit call on client
     # This emits the 'chat' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
     socketio.emit('turn',  data, broadcast=True, include_self=False)
+    socketio.emit('switch', data, broadcast=True, include_self=True)
     
 @socketio.on('end')
 def on_end(data): 

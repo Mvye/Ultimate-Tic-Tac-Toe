@@ -25,17 +25,20 @@ function App() {
   const [message, setMessage] = useState("");
   const [username, setUsername] = useState("");
   const [players, setPlayers] = useState([]);
-  const [status, setStatus] = useState(-1);
+  const [type, setType] = useState(-1);
   
+  const typeRef = useRef(null);
   const loginRef = useRef(null);
+  
+  typeRef.current = type;
   
   function onClickBox(index) {
     if (!isClickable) {
       return
     }
     var boardAfterTurn = Object.assign([...board], {[index]: next});
-    if (board[index] === "") {
-      if (piece === 0) {
+    if (board[index] === "" && type !== 2) {
+      if (type === 0) {
         setBoard(prevList => Object.assign([...prevList], {[index]: "X"}));
         setPiece(1);
         setNext("O");
@@ -63,10 +66,14 @@ function App() {
   }
   
   function onClickLogin() {
-    if (loginRef != null) {
+    if (loginRef !== null) {
       const pickedUsername = loginRef.current.value;
       socket.emit('requestLogin', {sid: sid, requestedUsername: pickedUsername});
     }
+  }
+  
+  function hello() {
+    console.log(type);
   }
 
   // The function inside useEffect is only run whenever any variable in the array
@@ -79,10 +86,15 @@ function App() {
       console.log('Login approved');
       console.log(data);
       setPlayers(data.players);
-      setStatus(data.status);
+      setType(data.type);
+      console.log(data.type);
       setUsername(data.username);
+      if (data.type !== 0) {
+        setIsClickable(false);
+      }
     });
     socket.on('joined', (data) => {
+      console.log('New player joined');
       console.log(data);
     });
     socket.on('turn', (data) => {
@@ -92,6 +104,13 @@ function App() {
       setBoard(prevList => Object.assign([...prevList], {[data.index]: data.piece}));
       setPiece(data.nextPiece);
       setNext(data.nextNext);
+    });
+    socket.on('switch', (data) => {
+      console.log('Switching clickable');
+      
+      if (typeRef.current == 0 || typeRef.current == 1) {
+        setIsClickable(prevClickable => !prevClickable);
+      }
     });
     socket.on('end', (data) => {
       console.log('End event received!');
@@ -103,7 +122,7 @@ function App() {
     });
   }, []);
   
-  if (status == -1) {
+  if (type === -1) {
     return (
       <div>
         <input ref={loginRef} type="text" />
