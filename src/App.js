@@ -25,6 +25,7 @@ function App() {
   const [message, setMessage] = useState("");
   const [username, setUsername] = useState("");
   const [players, setPlayers] = useState([]);
+  const [spectators, setSpectators] = useState([]);
   const [type, setType] = useState(-1); // 0 for player x, 1 for player o, 2 for spectator, -1 for not logged in 
   
   const typeRef = useRef(null);
@@ -84,6 +85,7 @@ function App() {
       console.log('Login approved');
       console.log(data);
       setPlayers(data.players);
+      setSpectators(data.spectators);
       setType(data.type);
       console.log(data.type);
       setUsername(data.username);
@@ -95,6 +97,7 @@ function App() {
       console.log('New player joined');
       console.log(data);
       setPlayers(data.players);
+      setSpectators(data.spectators);
     });
     socket.on('turn', (data) => {
       console.log('Turn event received!');
