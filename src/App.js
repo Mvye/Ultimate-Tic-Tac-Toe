@@ -24,6 +24,8 @@ function App() {
   const [gameEnd, setGameEnd] = useState(false);
   const [message, setMessage] = useState("");
   const [username, setUsername] = useState("");
+  const [players, setPlayers] = useState([]);
+  const [status, setStatus] = useState(-1);
   
   const loginRef = useRef(null);
   
@@ -63,7 +65,6 @@ function App() {
   function onClickLogin() {
     if (loginRef != null) {
       const pickedUsername = loginRef.current.value;
-      setUsername(pickedUsername);
       socket.emit('requestLogin', {sid: sid, requestedUsername: pickedUsername});
     }
   }
@@ -77,6 +78,9 @@ function App() {
     socket.on('approved', (data) => {
       console.log('Login approved');
       console.log(data);
+      setPlayers(data.players);
+      setStatus(data.status);
+      setUsername(data.username);
     });
     socket.on('joined', (data) => {
       console.log(data);
@@ -98,16 +102,22 @@ function App() {
       setMessage(data.text + data.outcome);
     });
   }, []);
-
-  return (
-    <div>
-      <input ref={loginRef} type="text" />
-      <button onClick={onClickLogin}>login</button>
-      
-      <Board board={board} click={(index) => onClickBox(index)}/>
-      <Message next={next} end={gameEnd} message={message}/>
-    </div>
-  );
+  
+  if (status == -1) {
+    return (
+      <div>
+        <input ref={loginRef} type="text" />
+        <button onClick={onClickLogin}>login</button>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <Board board={board} click={(index) => onClickBox(index)}/>
+        <Message next={next} end={gameEnd} message={message}/>
+      </div>
+    );
+  }
 }
 
 export default App;
