@@ -6,7 +6,9 @@ export function Message(props) {
             <p> {props.message} </p>
         );
     }
+    const players = props.players;
+    const nextPlayer = players[props.piece];
     return (
-        <p> Next turn: { props.next }</p>
+        <p> Next turn: {nextPlayer}({props.next})</p>
     );
 }

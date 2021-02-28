@@ -36,6 +36,7 @@ function App() {
     if (!isClickable) {
       return
     }
+    console.log(players);
     var boardAfterTurn = Object.assign([...board], {[index]: next});
     if (board[index] === "" && type !== 2) {
       if (type === 0) {
@@ -56,7 +57,7 @@ function App() {
         setGameEnd(true);
         if (outcome !== "tie") {
           socket.emit('end', {outcome: outcome, text: "The winner is: "});
-          setMessage("The winner is " + outcome);
+          setMessage("The winner is " + players[piece] + " (" + outcome + ")");
         } else {
           socket.emit('end', {outcome: outcome, text: "There was a "});
           setMessage("There was a " + outcome);
@@ -70,10 +71,6 @@ function App() {
       const pickedUsername = loginRef.current.value;
       socket.emit('requestLogin', {sid: sid, requestedUsername: pickedUsername});
     }
-  }
-  
-  function hello() {
-    console.log(type);
   }
 
   // The function inside useEffect is only run whenever any variable in the array
@@ -96,6 +93,7 @@ function App() {
     socket.on('joined', (data) => {
       console.log('New player joined');
       console.log(data);
+      setPlayers(data.players);
     });
     socket.on('turn', (data) => {
       console.log('Turn event received!');
@@ -133,7 +131,7 @@ function App() {
     return (
       <div>
         <Board board={board} click={(index) => onClickBox(index)}/>
-        <Message next={next} end={gameEnd} message={message}/>
+        <Message next={next} piece={piece} players={players} end={gameEnd} message={message}/>
       </div>
     );
   }
