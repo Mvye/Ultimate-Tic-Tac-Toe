@@ -25,18 +25,19 @@ function App() {
   const [message, setMessage] = useState("");
   const [username, setUsername] = useState("");
   const [players, setPlayers] = useState([]);
-  const [type, setType] = useState(-1);
+  const [type, setType] = useState(-1); // 0 for player x, 1 for player o, 2 for spectator, -1 for not logged in 
   
   const typeRef = useRef(null);
   const loginRef = useRef(null);
+  const endRef = useRef(null);
   
   typeRef.current = type;
+  endRef.current = gameEnd;
   
   function onClickBox(index) {
     if (!isClickable) {
       return
     }
-    console.log(players);
     var boardAfterTurn = Object.assign([...board], {[index]: next});
     if (board[index] === "" && type !== 2) {
       if (type === 0) {
@@ -105,9 +106,10 @@ function App() {
     });
     socket.on('switch', (data) => {
       console.log('Switching clickable');
-      
-      if (typeRef.current == 0 || typeRef.current == 1) {
-        setIsClickable(prevClickable => !prevClickable);
+      if (!endRef.current) {
+        if (typeRef.current == 0 || typeRef.current == 1) {
+          setIsClickable(prevClickable => !prevClickable);
+        }
       }
     });
     socket.on('end', (data) => {
