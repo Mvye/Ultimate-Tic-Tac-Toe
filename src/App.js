@@ -9,6 +9,13 @@ import io from 'socket.io-client';
 
 const socket = io(); // Connects to socket connection
 
+var sid;
+
+socket.on("connect", () => {
+  sid = socket.id;
+  console.log(sid);
+});
+
 function App() {
   const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
   const [piece, setPiece] = useState(0);
@@ -16,6 +23,9 @@ function App() {
   const [isClickable, setIsClickable] = useState(true);
   const [gameEnd, setGameEnd] = useState(false);
   const [message, setMessage] = useState("");
+  const [username, setUsername] = useState("");
+  
+  const loginRef = useRef(null);
   
   function onClickBox(index) {
     if (!isClickable) {
@@ -49,6 +59,14 @@ function App() {
       }
     }
   }
+  
+  function onClickLogin() {
+    if (loginRef != null) {
+      const pickedUsername = loginRef.current.value;
+      setUsername(pickedUsername);
+      socket.emit('requestLogin', {sid: sid, requestedUsername: pickedUsername});
+    }
+  }
 
   // The function inside useEffect is only run whenever any variable in the array
   // (passed as the second arg to useEffect) changes. Since this array is empty
@@ -56,6 +74,13 @@ function App() {
   useEffect(() => {
     // Listening for a chat event emitted by the server. If received, we
     // run the code in the function that is passed in as the second arg
+    socket.on('approved', (data) => {
+      console.log('Login approved');
+      console.log(data);
+    });
+    socket.on('joined', (data) => {
+      console.log(data);
+    });
     socket.on('turn', (data) => {
       console.log('Turn event received!');
       console.log(data);
@@ -76,8 +101,11 @@ function App() {
 
   return (
     <div>
-        <Board board={board} click={(index) => onClickBox(index)}/>
-        <Message next={next} end={gameEnd} message={message}/>
+      <input ref={loginRef} type="text" />
+      <button onClick={onClickLogin}>login</button>
+      
+      <Board board={board} click={(index) => onClickBox(index)}/>
+      <Message next={next} end={gameEnd} message={message}/>
     </div>
   );
 }

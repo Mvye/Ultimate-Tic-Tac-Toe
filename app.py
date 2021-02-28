@@ -29,6 +29,32 @@ def on_connect():
 def on_disconnect():
     print('User disconnected!')
 
+def createPlayerData(players, username_position, username):
+    if username_position < 2:
+        status = username_position # Player 1 or 2
+    else:
+        status = 2 # Spectator
+        
+    data = {
+        "players": players,
+        "status": status,
+        "position": username_position,
+        "username": username
+    }
+    return data
+    
+players = []
+@socketio.on('requestLogin')
+def on_request_login(data):
+    username = data["requestedUsername"]
+    sid = data["sid"]
+    players.append(username)
+    new_data = {
+        "players": players
+    }
+    socketio.emit('joined', new_data, broadcast=True, include_self=False)
+    socketio.emit('approved', createPlayerData(players, players.index(username), username), room=sid)
+
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
 @socketio.on('turn')
