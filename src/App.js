@@ -3,6 +3,7 @@ import './App.css';
 import './Board.css';
 import { Board } from './Board.js';
 import { Message } from './Message.js';
+import { UsersList } from './UsersList.js';
 import { calculateWinner } from './calculateWinner.js';
 import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
@@ -137,6 +138,7 @@ function App() {
       <div>
         <Board board={board} click={(index) => onClickBox(index)}/>
         <Message next={next} piece={piece} players={players} end={gameEnd} message={message}/>
+        <UsersList players={players} spectators={spectators} />
       </div>
     );
   }
