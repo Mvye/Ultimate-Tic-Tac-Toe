@@ -10,7 +10,7 @@ export function Message(props) {
         );
     }
     const players = props.players;
-    const nextPlayer = players[props.piece];
+    const nextPlayer = players[props.player];
     return (
         <p> Next turn: {nextPlayer} ({props.next})</p>
     );

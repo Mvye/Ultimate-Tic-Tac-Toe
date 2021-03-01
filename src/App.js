@@ -18,57 +18,24 @@ socket.on("connect", () => {
 });
 
 function App() {
-  const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
-  const [piece, setPiece] = useState(0);
-  const [next, setNext] = useState("X");
-  const [isClickable, setIsClickable] = useState(true);
-  const [gameEnd, setGameEnd] = useState(false);
-  const [message, setMessage] = useState("");
   const [username, setUsername] = useState("");
   const [players, setPlayers] = useState([]);
   const [spectators, setSpectators] = useState([]);
-  const [type, setType] = useState(-1); // 0 for player x, 1 for player o, 2 for spectator, -1 for not logged in 
+  const [type, setType] = useState(-1);
+  const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
+  const [player, setPlayer] = useState(0);
+  const [next, setNext] = useState("X");
+  const [isClickable, setIsClickable] = useState(true);
+  const [message, setMessage] = useState("");
+  const [gameEnd, setGameEnd] = useState(false);
   const [vote, setVote] = useState(0);
   
-  const typeRef = useRef(null);
   const loginRef = useRef(null);
+  const typeRef = useRef(null);
   const endRef = useRef(null);
   
   typeRef.current = type;
   endRef.current = gameEnd;
-  
-  function onClickBox(index) {
-    if (!isClickable) {return;}
-    
-    var boardAfterTurn = Object.assign([...board], {[index]: next});
-    if (board[index] === "" && type !== 2) {
-      if (type === 0) {
-        setBoard(prevList => Object.assign([...prevList], {[index]: "X"}));
-        setPiece(1);
-        setNext("O");
-        socket.emit('turn', { index: index, piece: "X", nextPiece: 1, nextNext: "O"});
-      }
-      else {
-        setBoard(prevList => Object.assign([...prevList], {[index]: "O"}));
-        setPiece(0);
-        setNext("X");
-        socket.emit('turn', { index: index, piece: "O", nextPiece: 0, nextNext: "X"});
-      }
-      const outcome = calculateWinner(boardAfterTurn);
-      if (outcome !== null) {
-        setIsClickable(false);
-        setGameEnd(true);
-        if (outcome !== "tie") {
-          const text = "The winner is " + players[piece] + " (" + outcome + ")";
-          socket.emit('end', {outcome: outcome, text: text});
-          setMessage(text);
-        } else {
-          socket.emit('end', {outcome: outcome, text: "There was a "});
-          setMessage("There was a " + outcome);
-        }
-      }
-    }
-  }
   
   function onClickLogin() {
     if (loginRef !== null) {
@@ -77,25 +44,56 @@ function App() {
     }
   }
   
+  function updateStates(index, placedPiece, nextPlayer, nextPiece) {
+    setBoard(prevList => Object.assign([...prevList], {[index]: placedPiece}));
+    setPlayer(nextPlayer);
+    setNext(nextPiece);
+    socket.emit('turn', { index: index, piece: placedPiece, nextPlece: nextPlayer, nextNext: nextPiece});
+  }
+  
+  function endGame(outcome) {
+    setIsClickable(false);
+    setGameEnd(true);
+    if (outcome !== "tie") {
+      const text = "The winner is " + players[player] + " (" + outcome + ")";
+      socket.emit('end', {outcome: outcome, text: text});
+      setMessage(text);
+    } else {
+      socket.emit('end', {outcome: outcome, text: "There was a "});
+      setMessage("There was a " + outcome);
+    }
+  }
+  
+  function onClickBox(index) {
+    if (!isClickable) {return;}
+    var boardAfterTurn = Object.assign([...board], {[index]: next});
+    if (board[index] === "" && type !== 2) {
+      if (type === 0) {
+        updateStates(index, "X", 1, "O");
+      }
+      else {
+        updateStates(index, "O", 0, "X");
+      }
+      const outcome = calculateWinner(boardAfterTurn);
+      if (outcome !== null) {
+        endGame(outcome);
+      }
+    }
+  }
+  
   function onClickPlayAgain() {
     if (type === 2) {return;}
     socket.emit('vote', {username: username});
   }
 
-  // The function inside useEffect is only run whenever any variable in the array
-  // (passed as the second arg to useEffect) changes. Since this array is empty
-  // here, then the function will only run once at the very beginning of mounting.
   useEffect(() => {
-    // Listening for a chat event emitted by the server. If received, we
-    // run the code in the function that is passed in as the second arg
     socket.on('approved', (data) => {
       console.log('Login approved');
       console.log(data);
+      setUsername(data.username);
       setPlayers(data.players);
       setSpectators(data.spectators);
       setType(data.type);
-      console.log(data.type);
-      setUsername(data.username);
       if (data.type !== 0) {
         setIsClickable(false);
       }
@@ -109,9 +107,8 @@ function App() {
     socket.on('turn', (data) => {
       console.log('Turn event received!');
       console.log(data);
-      
       setBoard(prevList => Object.assign([...prevList], {[data.index]: data.piece}));
-      setPiece(data.nextPiece);
+      setPlayer(data.nextPiece);
       setNext(data.nextNext);
     });
     socket.on('switch', (data) => {
@@ -125,14 +122,13 @@ function App() {
     socket.on('end', (data) => {
       console.log('End event received!');
       console.log(data);
-      
       setIsClickable(false);
-      setGameEnd(true);
       if (data.outcome == 'tie') {
         setMessage(data.text + data.outcome);
       } else {
         setMessage(data.text);
       }
+      setGameEnd(true);
     });
     socket.on('voting', (data) => {
       console.log('Voting event received');
@@ -142,13 +138,13 @@ function App() {
     socket.on('again', (data) => {
       console.log('Game is restarting');
       setBoard(board);
-      setGameEnd(false);
-      setPiece(0);
+      setPlayer(0);
       setNext(next);
-      setVote(0);
       if (typeRef.current == 0) {
         setIsClickable(true);
       }
+      setGameEnd(false);
+      setVote(0);
     });
   }, []);
   
@@ -163,7 +159,7 @@ function App() {
     return (
       <div>
         <Board board={board} click={(index) => onClickBox(index)}/>
-        <Message next={next} piece={piece} players={players} end={gameEnd} message={message} vote={vote} click={() => onClickPlayAgain()}/>
+        <Message next={next} player={player} players={players} end={gameEnd} message={message} vote={vote} click={() => onClickPlayAgain()}/>
         <UsersList players={players} spectators={spectators} />
       </div>
     );
