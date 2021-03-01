@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import './Board.css';
 import { Board } from './Board.js';
@@ -48,7 +47,7 @@ function App() {
     setBoard(prevList => Object.assign([...prevList], {[index]: placedPiece}));
     setPlayer(nextPlayer);
     setNext(nextPiece);
-    socket.emit('turn', { index: index, piece: placedPiece, nextPlece: nextPlayer, nextNext: nextPiece});
+    socket.emit('turn', { index: index, piece: placedPiece, nextPiece: nextPlayer, nextNext: nextPiece});
   }
   
   function endGame(outcome) {
@@ -151,6 +150,7 @@ function App() {
   if (type === -1) {
     return (
       <div>
+        <h2>Please pick a username to login!</h2>
         <input ref={loginRef} type="text" />
         <button onClick={onClickLogin}>login</button>
       </div>
@@ -158,6 +158,7 @@ function App() {
   } else {
     return (
       <div>
+        <h1> {players[0]} vs {players[1]} </h1>
         <Board board={board} click={(index) => onClickBox(index)}/>
         <Message next={next} player={player} players={players} end={gameEnd} message={message} vote={vote} click={() => onClickPlayAgain()}/>
         <UsersList players={players} spectators={spectators} />

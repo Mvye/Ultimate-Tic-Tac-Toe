@@ -1,11 +1,26 @@
 .board {
-	width: 300px; /* Total horizontal dimensions */
-	height: 300px; /* Total vertical dimensions */
+	background: #ffd496;
 	display: grid; /* Enables CSS Grid */ 
 	grid-template-columns: repeat(3, 1fr); /* Total horizontal space broken into 3 columns */
   grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
+  height: 300px; /* Total vertical dimensions */
+	width: 300px; /* Total horizontal dimensions */
+  margin: auto;
+}
+
+body {
+	background: #b2e7eb;
+	text-align: center;
 }
 
 .box {
-  border: 1px solid black; /* Shows the lines in the CSS grid */
+	align-items: center;
+  border: 1px solid #fab552; /* Shows the lines in the CSS grid */
+  display: flex;
+  font-size: 35px;
+  justify-content: center;
+}
+
+li {
+	list-style-type: none;
 }
