@@ -113,7 +113,7 @@ function App() {
     socket.on('switch', (data) => {
       console.log('Switching clickable');
       if (!endRef.current) {
-        if (typeRef.current == 0 || typeRef.current == 1) {
+        if (typeRef.current === 0 || typeRef.current === 1) {
           setIsClickable(prevClickable => !prevClickable);
         }
       }
@@ -122,7 +122,7 @@ function App() {
       console.log('End event received!');
       console.log(data);
       setIsClickable(false);
-      if (data.outcome == 'tie') {
+      if (data.outcome === 'tie') {
         setMessage(data.text + data.outcome);
       } else {
         setMessage(data.text);
@@ -139,7 +139,7 @@ function App() {
       setBoard(board);
       setPlayer(0);
       setNext(next);
-      if (typeRef.current == 0) {
+      if (typeRef.current === 0) {
         setIsClickable(true);
       }
       setGameEnd(false);

@@ -32,7 +32,8 @@ def on_disconnect():
 players = []
 spectators = []
 def updateStatus(username):
-    if (len(players) < 2):
+    '''Adds the user to either players or spectators and gives them their status'''
+    if len(players) < 2:
         players.append(username)
         return players.index(username)
     else:
@@ -40,6 +41,7 @@ def updateStatus(username):
         return 2
 
 def createPlayerData(status, username):
+    '''Creates dictionary with current players, spectators, and client's status'''
     data = {
         "players": players,
         "spectators": spectators,
@@ -50,6 +52,7 @@ def createPlayerData(status, username):
 
 @socketio.on('requestLogin')
 def on_request_login(data):
+    '''Adds new user to players or spectators, sends updated lists to all users, sends client their status'''
     username = data["requestedUsername"]
     sid = data["sid"]
     new_data = {
@@ -62,31 +65,35 @@ def on_request_login(data):
 
 @socketio.on('turn')
 def on_turn(data):
+    '''When a player's turn ends, emits the updated board to all other users and switches turns'''
     print(str(data))
-    socketio.emit('turn',  data, broadcast=True, include_self=False)
+    socketio.emit('turn', data, broadcast=True, include_self=False)
     socketio.emit('switch', data, broadcast=True, include_self=True)
 
 voted = []
 @socketio.on('end')
-def on_end(data): 
+def on_end(data):
+    '''After game is over, emits the updated board to all other users and triggers voting'''
     print(str(data))
-    votes = { "vote": len(voted) }
-    socketio.emit('end',  data, broadcast=True, include_self=False)
+    votes = {"vote": len(voted)}
+    socketio.emit('end', data, broadcast=True, include_self=False)
     socketio.emit('voting', votes, broadcast=True, include_self=True)
 
 def canVote(username):
+    '''Helper method to determine if user can increment vote'''
     if username in players and username not in voted:
         return True
-    else:
-        return False
+    return False
 
 def addVote(username):
+    '''Helper method to increment vote and return the updated vote count'''
     print("Received vote from " + username)
     voted.append(username)
-    return { "vote": len(voted) }
+    return {"vote": len(voted)}
 
 @socketio.on('vote')
 def on_vote(data):
+    '''Checks if vote is valid, applies vote if it is; once vote is at required threshold emits to trigger game restart'''
     username = data["username"]
     if canVote == False:
         print("Invalid vote received")
@@ -95,7 +102,6 @@ def on_vote(data):
     if len(voted) == 2:
         socketio.emit('again', votes, broadcast=True, include_self=True)
         voted.clear()
-        
 
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 socketio.run(
