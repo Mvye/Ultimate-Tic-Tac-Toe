@@ -3,6 +3,9 @@ from flask import Flask, send_from_directory, json, session
 from flask_socketio import SocketIO
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 app = Flask(__name__, static_folder='./build/static')
 
@@ -15,7 +18,8 @@ db = SQLAlchemy(app)
 
 # IMPORTANT: This must be AFTER creating db variable to prevent
 # circular import issues
-from models import User
+import models
+db.create_all()
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 socketio = SocketIO(
@@ -60,12 +64,23 @@ def createPlayerData(status, username):
         "username": username
     }
     return data
+all_players = []
+def addToDatabase(username):
+    '''Adds newly joined player to the database if first time login'''
+    player_search = models.Player.query.filter_by(username=username).first()
+    if player_search is None:
+        new_player = models.Player(username=username, score=100)
+        db.session.add(new_player)
+        db.session.commit()
+    else:
+        print(models.Player.query.filter_by(username=username).first().score)
 
 @socketio.on('requestLogin')
 def on_request_login(data):
     '''Adds new user to players or spectators, sends updated lists to all users, sends client their status'''
     username = data["requestedUsername"]
     sid = data["sid"]
+    addToDatabase(username)
     new_data = {
         "players": players,
         "spectators": spectators
