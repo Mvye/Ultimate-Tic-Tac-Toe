@@ -1,7 +1,4 @@
 export function calculateWinner(squares) {
-    if (!squares.includes("")) {
-      return "tie"
-    }
     const lines = [
       [0, 1, 2],
       [3, 4, 5],
@@ -17,6 +14,9 @@ export function calculateWinner(squares) {
       if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
         return squares[a];
       }
+    }
+    if (!squares.includes("")) {
+      return "tie"
     }
     return null;
 }
