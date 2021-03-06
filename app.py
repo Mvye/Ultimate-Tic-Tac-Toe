@@ -117,17 +117,22 @@ def addVote(username):
     voted.append(username)
     return {"vote": len(voted)}
 
-@socketio.on('vote')
-def on_vote(data):
-    '''Checks if vote is valid, applies vote if it is; once vote is at required threshold emits to trigger game restart'''
-    username = data["username"]
-    if canVote == False:
-        print("Invalid vote received")
+def vote_occur(username):
+    '''Adds vote to vote list and emits updated vote count to everyone'''
     votes = addVote(username)
     socketio.emit('voting', votes, broadcast=True, include_self=True)
     if len(voted) == 2:
         socketio.emit('again', votes, broadcast=True, include_self=True)
         voted.clear()
+
+@socketio.on('vote')
+def on_vote(data):
+    '''Checks if vote is valid, applies vote if it is; once vote is at required threshold emits to trigger game restart'''
+    username = data["username"]
+    if canVote(username) == False:
+        print("Invalid vote received")
+    else:
+        vote_occur(username)
 
 # Note we need to add this line so we can import app in the python shell
 if __name__ == "__main__":
