@@ -22,6 +22,7 @@ function App() {
   const [players, setPlayers] = useState([]);
   const [spectators, setSpectators] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
+  const [leaderboardVisible, setLeaderboardVisibile] = useState(false);
   const [type, setType] = useState(-1);
   const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
   const [player, setPlayer] = useState(0);
@@ -171,7 +172,8 @@ function App() {
         <Board board={board} click={(index) => onClickBox(index)}/>
         <Message next={next} player={player} players={players} end={gameEnd} message={message} vote={vote} click={() => onClickPlayAgain()}/>
         <UsersList players={players} spectators={spectators} />
-        <Leaderboard leaderboard={leaderboard}/>
+        <button onClick={() => setLeaderboardVisibile(prevVisible => !prevVisible)}>show/hide leaderboard</button>
+        {leaderboardVisible && <Leaderboard leaderboard={leaderboard}/>}
       </div>
     );
   }
