@@ -4,6 +4,7 @@ import { Board } from './Board.js';
 import { Message } from './Message.js';
 import { UsersList } from './UsersList.js';
 import { calculateWinner } from './calculateWinner.js';
+import { Leaderboard } from './Leaderboard.js'
 import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
 
@@ -20,6 +21,7 @@ function App() {
   const [username, setUsername] = useState("");
   const [players, setPlayers] = useState([]);
   const [spectators, setSpectators] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
   const [type, setType] = useState(-1);
   const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
   const [player, setPlayer] = useState(0);
@@ -92,6 +94,7 @@ function App() {
       setUsername(data.username);
       setPlayers(data.players);
       setSpectators(data.spectators);
+      setLeaderboard(data.leaderboard);
       setType(data.type);
       if (data.type !== 0) {
         setIsClickable(false);
@@ -102,6 +105,7 @@ function App() {
       console.log(data);
       setPlayers(data.players);
       setSpectators(data.spectators);
+      setLeaderboard(data.leaderboard);
     });
     socket.on('turn', (data) => {
       console.log('Turn event received!');
@@ -134,6 +138,11 @@ function App() {
       console.log(data);
       setVote(data.vote);
     });
+    socket.on('leaderboard', (data) => {
+      console.log('Leaderboard updated');
+      console.log(data);
+      setLeaderboard(data.leaderboard);
+    });
     socket.on('again', (data) => {
       console.log('Game is restarting');
       setBoard(board);
@@ -162,6 +171,7 @@ function App() {
         <Board board={board} click={(index) => onClickBox(index)}/>
         <Message next={next} player={player} players={players} end={gameEnd} message={message} vote={vote} click={() => onClickPlayAgain()}/>
         <UsersList players={players} spectators={spectators} />
+        <Leaderboard leaderboard={leaderboard}/>
       </div>
     );
   }

@@ -60,9 +60,9 @@ def createPlayerData(status, username, leaderboard):
     data = {
         "players": players,
         "spectators": spectators,
+        "leaderboard": leaderboard,
         "type": status,
-        "username": username,
-        "leaderboard": leaderboard
+        "username": username
     }
     return data
 
@@ -135,6 +135,7 @@ def on_end(data):
     votes = {"vote": len(voted)}
     socketio.emit('end', data, broadcast=True, include_self=False)
     socketio.emit('voting', votes, broadcast=True, include_self=True)
+    socketio.emit('leaderboard', {"leaderboard": leaderboard}, broadcast=True, include_self=True)
 
 def canVote(username):
     '''Helper method to determine if user can increment vote'''
