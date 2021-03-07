@@ -55,15 +55,28 @@ def updateStatus(username):
         spectators.append(username)
         return 2
 
-def createPlayerData(status, username):
+def createPlayerData(status, username, leaderboard):
     '''Creates dictionary with current players, spectators, and client's status'''
     data = {
         "players": players,
         "spectators": spectators,
         "type": status,
-        "username": username
+        "username": username,
+        "leaderboard": leaderboard
     }
     return data
+
+def get_leaderboard():
+    '''Gets players from database sorted descending by score'''
+    players = db.session.query(models.Player).order_by(models.Player.score.desc())
+    leaderboard = []
+    for i in players:
+        leaderboard.append({
+            "username": i.username,
+            "score": i.score
+        })
+    print(leaderboard)
+    return leaderboard
 
 def addToDatabase(username):
     '''Adds newly joined player to the database if first time login'''
@@ -81,13 +94,15 @@ def on_request_login(data):
     username = data["requestedUsername"]
     sid = data["sid"]
     addToDatabase(username)
+    leaderboard = get_leaderboard()
     new_data = {
         "players": players,
-        "spectators": spectators
+        "spectators": spectators,
+        "leaderboard": leaderboard
     }
     status = updateStatus(username)
     socketio.emit('joined', new_data, broadcast=True, include_self=False)
-    socketio.emit('approved', createPlayerData(status, username), room=sid)
+    socketio.emit('approved', createPlayerData(status, username, leaderboard), room=sid)
 
 @socketio.on('turn')
 def on_turn(data):
@@ -109,18 +124,6 @@ def update_scores(outcome):
         player_o.score = player_o.score + 1
         db.session.commit()
     print("Player X score: " + str(player_x.score) + " Player O score: " + str(player_o.score))
-
-def get_leaderboard():
-    '''Gets players from database sorted descending by score'''
-    players = db.session.query(models.Player).order_by(models.Player.score.desc())
-    leaderboard = []
-    for i in players:
-        leaderboard.append({
-            "username": i.username,
-            "score": i.score
-        })
-    print(leaderboard)
-    return leaderboard
 
 voted = []
 @socketio.on('end')
