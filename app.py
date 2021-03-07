@@ -64,7 +64,7 @@ def createPlayerData(status, username):
         "username": username
     }
     return data
-all_players = []
+
 def addToDatabase(username):
     '''Adds newly joined player to the database if first time login'''
     player_search = models.Player.query.filter_by(username=username).first()
@@ -96,11 +96,26 @@ def on_turn(data):
     socketio.emit('turn', data, broadcast=True, include_self=False)
     socketio.emit('switch', data, broadcast=True, include_self=True)
 
+def update_scores(outcome):
+    '''Gives the winning player +1 to their score and the losing player -1'''
+    player_x = db.session.query(models.Player).filter_by(username=players[0]).first()
+    player_o = db.session.query(models.Player).filter_by(username=players[1]).first()
+    if outcome == "X":
+        player_x.score = player_x.score + 1
+        player_o.score = player_o.score - 1
+        db.session.commit()
+    elif outcome == "O":
+        player_x.score = player_x.score - 1
+        player_o.score = player_o.score + 1
+        db.session.commit()
+    print("Player X score: " + str(player_x.score) + " Player O score: " + str(player_o.score))
+
 voted = []
 @socketio.on('end')
 def on_end(data):
     '''After game is over, emits the updated board to all other users and triggers voting'''
     print(str(data))
+    update_scores(data["outcome"])
     votes = {"vote": len(voted)}
     socketio.emit('end', data, broadcast=True, include_self=False)
     socketio.emit('voting', votes, broadcast=True, include_self=True)
