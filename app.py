@@ -110,12 +110,25 @@ def update_scores(outcome):
         db.session.commit()
     print("Player X score: " + str(player_x.score) + " Player O score: " + str(player_o.score))
 
+def get_leaderboard():
+    '''Gets players from database sorted descending by score'''
+    players = db.session.query(models.Player).order_by(models.Player.score.desc())
+    leaderboard = []
+    for i in players:
+        leaderboard.append({
+            "username": i.username,
+            "score": i.score
+        })
+    print(leaderboard)
+    return leaderboard
+
 voted = []
 @socketio.on('end')
 def on_end(data):
     '''After game is over, emits the updated board to all other users and triggers voting'''
     print(str(data))
     update_scores(data["outcome"])
+    leaderboard = get_leaderboard()
     votes = {"vote": len(voted)}
     socketio.emit('end', data, broadcast=True, include_self=False)
     socketio.emit('voting', votes, broadcast=True, include_self=True)
