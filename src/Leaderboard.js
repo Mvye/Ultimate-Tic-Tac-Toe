@@ -7,8 +7,7 @@ export function Leaderboard(props) {
         <table>
         <thead>
             <tr>
-                <th>Username</th>
-                <th>Score</th>
+                <th className="leaderboard" colspan="2">Leaderboard</th>
             </tr>
         </thead>
         <tbody>

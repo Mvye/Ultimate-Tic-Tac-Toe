@@ -1,5 +1,11 @@
 import React from 'react';
 
 export function ListJoined(props) {
-    return <li> {props.username} </li>;
+    return (
+        <React.Fragment>
+            <tr>
+                <td>{props.username}</td>
+            </tr>
+        </React.Fragment>
+    );
 }

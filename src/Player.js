@@ -13,8 +13,8 @@ export function Player(props) {
     return (
         <React.Fragment>
             <tr>
-                <td>{props.username}</td>
-                <td>{props.score}</td>
+                <td className="leaderboard">{props.username}</td>
+                <td className="leaderboard">{props.score}</td>
             </tr>
         </React.Fragment>
     );
