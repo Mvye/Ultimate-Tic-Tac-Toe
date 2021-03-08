@@ -1,5 +1,5 @@
 
-# Project 2 Milestone 1  
+# Project 2 Milestone 2 
 This is a tic tac toe game made with react. 
 
 # Steps to Deploy
@@ -23,10 +23,47 @@ Note: Skip if you do not want this website public.
 4. `pip install -r requirements.txt`
 5. `pip install flask-socketio`
 6. `pip install flask-cors`
+7. `pip install psycopg2-binary`
+8. `pip install Flask-SQLAlchemy==2.1`
+
+## Database Setup
+1.  Install PostGreSQL:  `sudo yum install postgresql postgresql-server postgresql-devel postgresql-contrib postgresql-docs`  Enter yes to all prompts.
+2.  Initialize PSQL database:  `sudo service postgresql initdb`
+3.  Start PSQL:  `sudo service postgresql start`
+4.  Make a new superuser:  `sudo -u postgres createuser --superuser $USER`  **If you get an error saying "could not change directory", that's okay! It worked!**
+5.  Make a new database:  `sudo -u postgres createdb $USER`  **If you get an error saying "could not change directory", that's okay! It worked!**
+6.  Make a new user:
+-   a)  `psql`  (if you already quit out of psql)
+-   b) Type this with your username and password (DONT JUST COPY PASTE):  `create user some_username_here superuser password 'some_unique_new_password_here';`  e.g.  `create user mm2373 superuser password 'mysecretpassword123';`
+-   c) \q to quit out of sql
+7. Save your username and password in a  `sql.env`  file with the format  `SQL_USER=`  and  `SQL_PASSWORD=`.
+
+## Create a new database on Heroku and connect to our code
+
+1.  In your terminal, go to the directory with  `app.py`.
+2.  Let's set up a new  _remote_  Postgres database with Heroku and connect to it locally.
+-   Login and fill creds:  `heroku login -i`
+-   Create a new Heroku app:  `heroku create`
+-   Create a new remote DB on your Heroku app:  `heroku addons:create heroku-postgresql:hobby-dev`  (If that doesn't work, add a  `-a {your-app-name}`  to the end of the command, no braces)
+-   See the config vars set by Heroku for you:  `heroku config`. Copy paste the value for DATABASE_URL
+-   Set the value of  `DATABASE_URL`  as an environment variable by entering this in the terminal:  `export DATABASE_URL='copy-paste-value-in-here'`  (mine looked like this  `export DATABASE_URL='postgres://lkmlrinuazynlb:b94acaa351c0ecdaa7d60ce75f7ccaf40c2af646281bd5b1a2787c2eb5114be4@ec2-54-164-238-108.compute-1.amazonaws.com:5432/d1ef9avoe3r77f'`)
+
+## Use Python code to update this new database
+
+1.  In the terminal, run  `python`  to open up an interactive session. Let's initialize a new database:
+```
+>> from app import db
+>> import models
+>> db.create_all()
+```
+2. Now let's make sure our Heroku remote database was created! Let's connect to it using:  `heroku pg:psql`
+3.  `\d`  to list all our tables.  `player`  should be in there now.
 
 ## Setup
 1.  Run  `echo "DANGEROUSLY_DISABLE_HOST_CHECK=true" > .env.development.local`  in the project directory
 2.  `cd`  into  **`react-starter`**  directory.  then run  `npm install socket.io-client --save`
+3. Run `heroku config`
+4. Create a `.env` file and write `export DATABASE_URL='set the URL what we got from heroku config'` in it
 
 ## Running the Application
 1. Run the command `python app.py` in terminal.
@@ -35,11 +72,13 @@ Note: Skip if you do not want this website public.
 ## Deploying to Heroku
 1.  Create a Heroku app:  `heroku create --buildpack heroku/python`
 2.  Add nodejs buildpack:  `heroku buildpacks:add --index 1 heroku/nodejs`
-3.  Push to Heroku:  `git push heroku main`
+3.  Add postgres database `heroku addons:create heroku-postgresql:hobby-dev`
+4.  Push to Heroku:  `git push heroku main`
 
 ## Problems
 1. Currently if one user joins and places their X on any box before anyone else joins, the game will be broken for anyone who joins later. Solution: Create a waiting room that only lets the first user place their X when there's another player in the game. This can be done with emitting events, similar to how voting to restart the game works. Maybe also implement a way for a new spectator to get the entire current board when they're admitted. This would likely be done by keeping the board data in the server.
 2. If a player/spectator leaves, they're still kept on the player/spectator list respectively. This makes it so that one can only play the game once per running the python app. Solution: Short term solution could be a button that once pressed would clear the player/spectator list. Long term solution could be letting multiple tic tac toe games play which would all show up as a list and once the players of the game have left, the games would be removed. This might be able to be done with socket rooms where a new room is created when a new game is. 
+3. If two users join with the same name the game cannot be played. After the first user's turn, no player can add to box. Solution: Make it so if one user is logged in with a username, others cannot log in with the same name. This can be done by only accepting logins if the username is not already in the game (i.e. in the players/spectators list). 
 
 ## Solved Issues 
 - **Issue #1:** When checking the board for if there was a winner, it would take one extra turn for the game to declare a winner/make the board unclickable.
@@ -55,9 +94,17 @@ Note: Skip if you do not want this website public.
 
   
 ## Resources:
+- CS 490 resources, all database setup portions were taken directly from directions given from this class
 - [React hooks](https://reactjs.org/docs/hooks-state.html)
 - [State variables](https://reactjs.org/docs/hooks-faq.html#should-i-use-one-or-many-state-variables)
 - [Python socketio](https://python-socketio.readthedocs.io/en/latest/server.html#emitting-events)
 - [Socket id](https://socket.io/docs/v3/server-socket-instance/#Socket-id)
 - [Sending a specific message with socket io](https://stackoverflow.com/questions/4647348/send-message-to-specific-client-with-socket-io-and-node-js )
 - [Center in css](https://www.freecodecamp.org/news/how-to-center-anything-with-css-align-a-div-text-and-more/)
+- [Sql-Alchemy queries](https://flask-sqlalchemy.palletsprojects.com/en/2.x/queries/)
+- [How to update in Sql-Alchemy](https://stackoverflow.com/questions/9667138/how-to-update-sqlalchemy-row-entry)
+- [Parse Error adjacent jsx element](https://stackoverflow.com/questions/31284169/parse-error-adjacent-jsx-elements-must-be-wrapped-in-an-enclosing-tag)
+- [CSS center tables](https://www.granneman.com/webdev/coding/css/centertables)
+- [CSS table styling](https://www.w3schools.com/css/css_table_style.asp)
+- [CSS font weight](https://www.w3schools.com/cssref/pr_font_weight.asp)
+- [Heroku multiple buildpacks](https://devcenter.heroku.com/articles/using-multiple-buildpacks-for-an-app)
