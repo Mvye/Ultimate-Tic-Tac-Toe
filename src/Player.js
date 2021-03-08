@@ -5,8 +5,10 @@ export function Player(props) {
     if (props.user === props.username) {
         return (
             <React.Fragment>
-                <td className="currentUser">{props.username}</td>
-                <td className="currentUser">{props.score}</td>
+                <tr>
+                    <td className="currentUser">{props.username}</td>
+                    <td className="currentUser">{props.score}</td>
+                </tr>
             </React.Fragment>
         );
     }
