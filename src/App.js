@@ -173,7 +173,7 @@ function App() {
         <Message next={next} player={player} players={players} end={gameEnd} message={message} vote={vote} click={() => onClickPlayAgain()}/>
         <UsersList players={players} spectators={spectators} />
         <button onClick={() => setLeaderboardVisibile(prevVisible => !prevVisible)}>show/hide leaderboard</button>
-        {leaderboardVisible && <Leaderboard leaderboard={leaderboard}/>}
+        {leaderboardVisible && <Leaderboard username={username} leaderboard={leaderboard}/>}
       </div>
     );
   }

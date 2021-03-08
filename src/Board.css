@@ -2,10 +2,10 @@
 	background: #ffd496;
 	display: grid; /* Enables CSS Grid */ 
 	grid-template-columns: repeat(3, 1fr); /* Total horizontal space broken into 3 columns */
-  grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
-  height: 300px; /* Total vertical dimensions */
+    grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
+    height: 300px; /* Total vertical dimensions */
 	width: 300px; /* Total horizontal dimensions */
-  margin: auto;
+    margin: auto;
 }
 
 body {
@@ -15,12 +15,28 @@ body {
 
 .box {
 	align-items: center;
-  border: 1px solid #fab552; /* Shows the lines in the CSS grid */
-  display: flex;
-  font-size: 35px;
-  justify-content: center;
+    border: 1px solid #fab552; /* Shows the lines in the CSS grid */
+    display: flex;
+    font-size: 35px;
+    justify-content: center;
+}
+
+.currentUser {
+    background-color: #a2dbac;
 }
 
 li {
 	list-style-type: none;
+}
+
+table {
+    margin-left:auto; 
+    margin-right:auto;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+th, td {
+    border-bottom: 1px solid black;
+    padding: 4px;
 }
