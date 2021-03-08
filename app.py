@@ -37,11 +37,13 @@ def index(filename):
 # When a client connects from this Socket connection, this function is run
 @socketio.on('connect')
 def on_connect():
+    '''Prints user connected in console on connect'''
     print('User connected!')
 
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
 def on_disconnect():
+    '''Prints user disconnected in console on disconnect'''
     print('User disconnected!')
 
 players = []
