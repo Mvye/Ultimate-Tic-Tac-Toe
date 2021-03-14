@@ -46,6 +46,7 @@ function App() {
   const endRef = useRef(null);
   
   const [boardClickable, setBoardClickable] = useState(9);
+  const [bigBoard, setBigBoard] = useState(["", "", "", "", "", "", "", "", ""]);
   
   typeRef.current = type;
   endRef.current = gameEnd;
@@ -63,7 +64,7 @@ function App() {
     setNext(nextPiece);
     socket.emit('turn', {bigIndex: bigIndex, index: index, piece: placedPiece, nextPiece: nextPlayer, nextNext: nextPiece});
   }
-  /*
+  
   function endGame(outcome) {
     setIsClickable(false);
     setGameEnd(true);
@@ -76,13 +77,21 @@ function App() {
       setMessage("There was a " + outcome);
     }
   }
-  */
+  
+  function declareBigBox(bigIndex, outcome) {
+    var boardAfterTurn = Object.assign([...bigBoard], {[bigIndex]: outcome});
+    setBigBoard(prevList => Object.assign([...prevList], {[bigIndex]: outcome}));
+    const bigOutcome = calculateWinner(boardAfterTurn);
+    if (bigOutcome !== null) {
+      endGame(bigOutcome);
+    }
+  }
   
   function onClickBox(bigIndex, index) {
     if (!isClickable) {return;}
-    console.log(boardClickable);
+    if (bigBoard[bigIndex] !== "") {return;}
     if (boardClickable !==9 && boardClickable !== bigIndex) {return;}
-    //var boardAfterTurn = Object.assign([...board], {[bigIndex]: Object.assign([...board[bigIndex]], {[index]: next})});
+    var boardAfterTurn = Object.assign([...board], {[bigIndex]: Object.assign([...board[bigIndex]], {[index]: next})});
     if (board[bigIndex][index] === "" && type !== 2) {
       if (type === 0) {
         updateStates(bigIndex, index, "X", 1, "O");
@@ -90,10 +99,10 @@ function App() {
       else {
         updateStates(bigIndex, index, "O", 0, "X");
       }
-      //const outcome = calculateWinner(boardAfterTurn);
-      //if (outcome !== null) {
-        //endGame(outcome);
-      //}
+      const outcome = calculateWinner(boardAfterTurn[bigIndex]);
+      if (outcome !== null) {
+        declareBigBox(bigIndex, outcome);
+      }
     }
   }
   
