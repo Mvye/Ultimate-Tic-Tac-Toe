@@ -45,6 +45,8 @@ function App() {
   const typeRef = useRef(null);
   const endRef = useRef(null);
   
+  const [boardClickable, setBoardClickable] = useState(9);
+  
   typeRef.current = type;
   endRef.current = gameEnd;
   
@@ -59,7 +61,7 @@ function App() {
     setBoard(prevList => Object.assign([...prevList], {[bigIndex]: Object.assign([...prevList[bigIndex]], {[index]: placedPiece})}));
     setPlayer(nextPlayer);
     setNext(nextPiece);
-    //socket.emit('turn', { index: index, piece: placedPiece, nextPiece: nextPlayer, nextNext: nextPiece});
+    socket.emit('turn', {bigIndex: bigIndex, index: index, piece: placedPiece, nextPiece: nextPlayer, nextNext: nextPiece});
   }
   /*
   function endGame(outcome) {
@@ -78,7 +80,9 @@ function App() {
   
   function onClickBox(bigIndex, index) {
     if (!isClickable) {return;}
-    var boardAfterTurn = Object.assign([...board], {[bigIndex]: Object.assign([...board[bigIndex]], {[index]: next})});
+    console.log(boardClickable);
+    if (boardClickable !==9 && boardClickable !== bigIndex) {return;}
+    //var boardAfterTurn = Object.assign([...board], {[bigIndex]: Object.assign([...board[bigIndex]], {[index]: next})});
     if (board[bigIndex][index] === "" && type !== 2) {
       if (type === 0) {
         updateStates(bigIndex, index, "X", 1, "O");
@@ -86,10 +90,10 @@ function App() {
       else {
         updateStates(bigIndex, index, "O", 0, "X");
       }
-      const outcome = calculateWinner(boardAfterTurn);
-      if (outcome !== null) {
+      //const outcome = calculateWinner(boardAfterTurn);
+      //if (outcome !== null) {
         //endGame(outcome);
-      }
+      //}
     }
   }
   
@@ -121,7 +125,7 @@ function App() {
     socket.on('turn', (data) => {
       console.log('Turn event received!');
       console.log(data);
-      setBoard(prevList => Object.assign([...prevList], {[data.index]: data.piece}));
+      setBoard(prevList => Object.assign([...prevList], {[data.bigIndex]: Object.assign([...prevList[data.bigIndex]], {[data.index]: data.piece})}));
       setPlayer(data.nextPiece);
       setNext(data.nextNext);
     });
@@ -130,6 +134,7 @@ function App() {
       if (!endRef.current) {
         if (typeRef.current === 0 || typeRef.current === 1) {
           setIsClickable(prevClickable => !prevClickable);
+          setBoardClickable(data.index);
         }
       }
     });
