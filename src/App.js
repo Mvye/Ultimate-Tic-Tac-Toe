@@ -1,6 +1,7 @@
 import './App.css';
 import './Board.css';
 import { Board } from './Board.js';
+import { BigBoard } from './BigBoard.js';
 import { Message } from './Message.js';
 import { UsersList } from './UsersList.js';
 import { calculateWinner } from './calculateWinner.js';
@@ -24,7 +25,15 @@ function App() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [leaderboardVisible, setLeaderboardVisibile] = useState(false);
   const [type, setType] = useState(-1);
-  const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
+  const [board, setBoard] = useState([["", "", "", "", "", "", "", "", ""],
+                                      ["", "", "", "", "", "", "", "", ""],
+                                      ["", "", "", "", "", "", "", "", ""],
+                                      ["", "", "", "", "", "", "", "", ""],
+                                      ["", "", "", "", "", "", "", "", ""],
+                                      ["", "", "", "", "", "", "", "", ""],
+                                      ["", "", "", "", "", "", "", "", ""],
+                                      ["", "", "", "", "", "", "", "", ""],
+                                      ["", "", "", "", "", "", "", "", ""]]);
   const [player, setPlayer] = useState(0);
   const [next, setNext] = useState("X");
   const [isClickable, setIsClickable] = useState(true);
@@ -46,13 +55,13 @@ function App() {
     }
   }
   
-  function updateStates(index, placedPiece, nextPlayer, nextPiece) {
-    setBoard(prevList => Object.assign([...prevList], {[index]: placedPiece}));
+  function updateStates(bigIndex, index, placedPiece, nextPlayer, nextPiece) {
+    setBoard(prevList => Object.assign([...prevList], {[bigIndex]: Object.assign([...prevList[bigIndex]], {[index]: placedPiece})}));
     setPlayer(nextPlayer);
     setNext(nextPiece);
-    socket.emit('turn', { index: index, piece: placedPiece, nextPiece: nextPlayer, nextNext: nextPiece});
+    //socket.emit('turn', { index: index, piece: placedPiece, nextPiece: nextPlayer, nextNext: nextPiece});
   }
-  
+  /*
   function endGame(outcome) {
     setIsClickable(false);
     setGameEnd(true);
@@ -65,20 +74,21 @@ function App() {
       setMessage("There was a " + outcome);
     }
   }
+  */
   
-  function onClickBox(index) {
+  function onClickBox(bigIndex, index) {
     if (!isClickable) {return;}
-    var boardAfterTurn = Object.assign([...board], {[index]: next});
-    if (board[index] === "" && type !== 2) {
+    var boardAfterTurn = Object.assign([...board], {[bigIndex]: Object.assign([...board[bigIndex]], {[index]: next})});
+    if (board[bigIndex][index] === "" && type !== 2) {
       if (type === 0) {
-        updateStates(index, "X", 1, "O");
+        updateStates(bigIndex, index, "X", 1, "O");
       }
       else {
-        updateStates(index, "O", 0, "X");
+        updateStates(bigIndex, index, "O", 0, "X");
       }
       const outcome = calculateWinner(boardAfterTurn);
       if (outcome !== null) {
-        endGame(outcome);
+        //endGame(outcome);
       }
     }
   }
@@ -169,7 +179,7 @@ function App() {
     return (
       <div>
         <h1> {players[0]} vs {players[1]} </h1>
-        <Board board={board} click={(index) => onClickBox(index)}/>
+        <BigBoard board={board} click={(bigIndex, index) => onClickBox(bigIndex, index)}/>
         <Message next={next} player={player} players={players} end={gameEnd} message={message} vote={vote} click={() => onClickPlayAgain()}/>
         <UsersList players={players} spectators={spectators} />
         <button onClick={() => setLeaderboardVisibile(prevVisible => !prevVisible)}>show/hide leaderboard</button>

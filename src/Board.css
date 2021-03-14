@@ -1,24 +1,26 @@
-.board {
-	background: #ffd496;
-	display: grid; /* Enables CSS Grid */ 
-	grid-template-columns: repeat(3, 1fr); /* Total horizontal space broken into 3 columns */
-    grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
-    height: 300px; /* Total vertical dimensions */
-	width: 300px; /* Total horizontal dimensions */
-    margin: auto;
+.big-board {
+  width: 600px;
+  height: 600px;
+  background: white;
+  display: grid; /* Enables CSS Grid */ 
+  grid-template-columns: repeat(3, 1fr); /* Total horizontal space broken into 3 columns */
+  grid-template-rows: repeat(3, 1fr);
+  margin: auto;
+}
+
+.big-box.middle-horizontal {
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+}
+
+.big-box.middle-verticle {
+  border-left: 2px solid black;
+  border-right: 2px solid black;
 }
 
 body {
 	background: #b2e7eb;
 	text-align: center;
-}
-
-.box {
-	align-items: center;
-    border: 1px solid #fab552; /* Shows the lines in the CSS grid */
-    display: flex;
-    font-size: 35px;
-    justify-content: center;
 }
 
 .currentUser {
@@ -32,6 +34,24 @@ body {
 
 li {
 	list-style-type: none;
+}
+
+.small-board {
+    background: #ffd496;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    margin: 11% auto;
+    width: 80%;
+    height: 80%;
+}
+
+.small-box {
+	align-items: center;
+	border: 1px solid #fab552;
+    display: flex;
+    font-size: 35px;
+    justify-content: center;
 }
 
 table {
