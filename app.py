@@ -19,20 +19,21 @@ db = SQLAlchemy(app)
 # IMPORTANT: This must be AFTER creating db variable to prevent
 # circular import issues
 import models
+
 db.create_all()
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
-socketio = SocketIO(
-    app,
-    cors_allowed_origins="*",
-    json=json,
-    manage_session=False
-)
+socketio = SocketIO(app,
+                    cors_allowed_origins="*",
+                    json=json,
+                    manage_session=False)
+
 
 @app.route('/', defaults={"filename": "index.html"})
 @app.route('/<path:filename>')
 def index(filename):
     return send_from_directory('./build', filename)
+
 
 # When a client connects from this Socket connection, this function is run
 @socketio.on('connect')
@@ -40,14 +41,18 @@ def on_connect():
     '''Prints user connected in console on connect'''
     print('User connected!')
 
+
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
 def on_disconnect():
     '''Prints user disconnected in console on disconnect'''
     print('User disconnected!')
 
+
 players = []
 spectators = []
+
+
 def updateStatus(username):
     '''Adds the user to either players or spectators and gives them their status'''
     if len(players) < 2:
@@ -56,6 +61,7 @@ def updateStatus(username):
     else:
         spectators.append(username)
         return 2
+
 
 def createPlayerData(status, username, leaderboard):
     '''Creates dictionary with current players, spectators, and client's status'''
@@ -68,17 +74,17 @@ def createPlayerData(status, username, leaderboard):
     }
     return data
 
+
 def get_leaderboard():
     '''Gets players from database sorted descending by score'''
-    players = db.session.query(models.Player).order_by(models.Player.score.desc())
+    players = db.session.query(models.Player).order_by(
+        models.Player.score.desc())
     leaderboard = []
     for i in players:
-        leaderboard.append({
-            "username": i.username,
-            "score": i.score
-        })
+        leaderboard.append({"username": i.username, "score": i.score})
     print(leaderboard)
     return leaderboard
+
 
 def addToDatabase(username):
     '''Adds newly joined player to the database if first time login'''
@@ -89,6 +95,7 @@ def addToDatabase(username):
         db.session.commit()
     else:
         print(models.Player.query.filter_by(username=username).first().score)
+
 
 @socketio.on('requestLogin')
 def on_request_login(data):
@@ -104,7 +111,10 @@ def on_request_login(data):
     }
     status = updateStatus(username)
     socketio.emit('joined', new_data, broadcast=True, include_self=False)
-    socketio.emit('approved', createPlayerData(status, username, leaderboard), room=sid)
+    socketio.emit('approved',
+                  createPlayerData(status, username, leaderboard),
+                  room=sid)
+
 
 @socketio.on('turn')
 def on_turn(data):
@@ -113,10 +123,13 @@ def on_turn(data):
     socketio.emit('turn', data, broadcast=True, include_self=False)
     socketio.emit('switch', data, broadcast=True, include_self=True)
 
+
 def update_scores(outcome):
     '''Gives the winning player +1 to their score and the losing player -1'''
-    player_x = db.session.query(models.Player).filter_by(username=players[0]).first()
-    player_o = db.session.query(models.Player).filter_by(username=players[1]).first()
+    player_x = db.session.query(
+        models.Player).filter_by(username=players[0]).first()
+    player_o = db.session.query(
+        models.Player).filter_by(username=players[1]).first()
     if outcome == "X":
         player_x.score = player_x.score + 1
         player_o.score = player_o.score - 1
@@ -125,9 +138,13 @@ def update_scores(outcome):
         player_x.score = player_x.score - 1
         player_o.score = player_o.score + 1
         db.session.commit()
-    print("Player X score: " + str(player_x.score) + " Player O score: " + str(player_o.score))
+    print("Player X score: " + str(player_x.score) + " Player O score: " +
+          str(player_o.score))
+
 
 voted = []
+
+
 @socketio.on('end')
 def on_end(data):
     '''After game is over, emits the updated board to all other users and triggers voting'''
@@ -137,7 +154,10 @@ def on_end(data):
     votes = {"vote": len(voted)}
     socketio.emit('end', data, broadcast=True, include_self=False)
     socketio.emit('voting', votes, broadcast=True, include_self=True)
-    socketio.emit('leaderboard', {"leaderboard": leaderboard}, broadcast=True, include_self=True)
+    socketio.emit('leaderboard', {"leaderboard": leaderboard},
+                  broadcast=True,
+                  include_self=True)
+
 
 def canVote(username):
     '''Helper method to determine if user can increment vote'''
@@ -145,11 +165,13 @@ def canVote(username):
         return True
     return False
 
+
 def addVote(username):
     '''Helper method to increment vote and return the updated vote count'''
     print("Received vote from " + username)
     voted.append(username)
     return {"vote": len(voted)}
+
 
 def vote_occur(username):
     '''Adds vote to vote list and emits updated vote count to everyone'''
@@ -158,6 +180,7 @@ def vote_occur(username):
     if len(voted) == 2:
         socketio.emit('again', votes, broadcast=True, include_self=True)
         voted.clear()
+
 
 @socketio.on('vote')
 def on_vote(data):
@@ -168,9 +191,10 @@ def on_vote(data):
     else:
         vote_occur(username)
 
+
 # Note we need to add this line so we can import app in the python shell
 if __name__ == "__main__":
-# Note that we don't call app.run anymore. We call socketio.run with app arg
+    # Note that we don't call app.run anymore. We call socketio.run with app arg
     socketio.run(
         app,
         host=os.getenv('IP', '0.0.0.0'),
