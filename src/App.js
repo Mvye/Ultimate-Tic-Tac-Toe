@@ -58,11 +58,11 @@ function App() {
     }
   }
   
-  function updateStates(bigIndex, index, placedPiece, nextPlayer, nextPiece) {
+  function updateStates(bigIndex, index, placedPiece, nextPlayer, nextPiece, nextBoardClickable) {
     setBoard(prevList => Object.assign([...prevList], {[bigIndex]: Object.assign([...prevList[bigIndex]], {[index]: placedPiece})}));
     setPlayer(nextPlayer);
     setNext(nextPiece);
-    socket.emit('turn', {bigIndex: bigIndex, index: index, piece: placedPiece, nextPiece: nextPlayer, nextNext: nextPiece});
+    socket.emit('turn', {bigIndex: bigIndex, index: index, piece: placedPiece, nextPiece: nextPlayer, nextNext: nextPiece, nextBoardClickable: nextBoardClickable});
   }
   
   function endGame(outcome) {
@@ -93,11 +93,18 @@ function App() {
     if (boardClickable !==9 && boardClickable !== bigIndex) {return;}
     var boardAfterTurn = Object.assign([...board], {[bigIndex]: Object.assign([...board[bigIndex]], {[index]: next})});
     if (board[bigIndex][index] === "" && type !== 2) {
-      if (type === 0) {
-        updateStates(bigIndex, index, "X", 1, "O");
+      var nextBoardClickable;
+      if (calculateWinner(boardAfterTurn[index]) !== null) {
+        nextBoardClickable = 9;
       }
       else {
-        updateStates(bigIndex, index, "O", 0, "X");
+        nextBoardClickable = index;
+      }
+      if (type === 0) {
+        updateStates(bigIndex, index, "X", 1, "O", nextBoardClickable);
+      }
+      else {
+        updateStates(bigIndex, index, "O", 0, "X", nextBoardClickable);
       }
       const outcome = calculateWinner(boardAfterTurn[bigIndex]);
       if (outcome !== null) {
@@ -143,7 +150,8 @@ function App() {
       if (!endRef.current) {
         if (typeRef.current === 0 || typeRef.current === 1) {
           setIsClickable(prevClickable => !prevClickable);
-          setBoardClickable(data.index);
+          setBoardClickable(data.nextBoardClickable);
+          console.log("Only small board " + data.index + data.nextBoardClickable + " should be clickable.");
         }
       }
     });
