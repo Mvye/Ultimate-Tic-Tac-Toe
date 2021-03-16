@@ -1,23 +1,35 @@
-import "./Board.css";
-import React from "react";
+import './Board.css';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-export function Player(props) {
-  if (props.user === props.username) {
+function Player(props) {
+  const { user } = props;
+  const { username } = props;
+  const { score } = props;
+  if (user === username) {
     return (
-      <React.Fragment>
+      <>
         <tr>
-          <td className="currentUser">{props.username}</td>
-          <td className="currentUser">{props.score}</td>
+          <td className="currentUser">{username}</td>
+          <td className="currentUser">{score}</td>
         </tr>
-      </React.Fragment>
+      </>
     );
   }
   return (
-    <React.Fragment>
+    <>
       <tr>
-        <td className="leaderboard">{props.username}</td>
-        <td className="leaderboard">{props.score}</td>
+        <td className="leaderboard">{username}</td>
+        <td className="leaderboard">{score}</td>
       </tr>
-    </React.Fragment>
+    </>
   );
 }
+
+Player.propTypes = {
+  user: PropTypes.func.isRequired,
+  username: PropTypes.func.isRequired,
+  score: PropTypes.func.isRequired,
+};
+
+export default Player;

@@ -1,15 +1,18 @@
-import "./Board.css";
-import React from "react";
-import { Square } from "./Square.js";
+import './Board.css';
+import React from 'react';
+import PropTypes from 'prop-types';
+import Square from './Square';
 
-export function Board(props) {
+function Board(props) {
+  const { board } = props;
+  const { click } = props;
   return (
     <div className="board">
-      {props.board.map((item, index) => (
+      {board.map((item, index) => (
         <Square
           key={index}
           click={() => {
-            props.click(index);
+            click(index);
           }}
           piece={props.board[index]}
         />
@@ -17,3 +20,10 @@ export function Board(props) {
     </div>
   );
 }
+
+Board.propTypes = {
+  board: PropTypes.func.isRequired,
+  click: PropTypes.func.isRequired,
+};
+
+export default Board;

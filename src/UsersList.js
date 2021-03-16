@@ -1,24 +1,35 @@
-import React from "react";
-import { ListJoined } from "./ListJoined.js";
-export function UsersList(props) {
+import React from 'react';
+import PropTypes from 'prop-types';
+import ListJoined from './ListJoined';
+
+function UsersList(props) {
+  const { players } = props;
+  const { spectators } = props;
   return (
-    <React.Fragment>
+    <>
       <table>
         <tbody>
           <tr>
             <td className="userHeaders"> Players: </td>
           </tr>
-          {props.players.map((player, index) => (
+          {players.map((player, index) => (
             <ListJoined key={index} username={player} />
           ))}
           <tr>
             <td className="userHeaders"> Spectators: </td>
           </tr>
-          {props.spectators.map((spectators, index) => (
+          {spectators.map((spectator, index) => (
             <ListJoined key={index} username={spectators} />
           ))}
         </tbody>
       </table>
-    </React.Fragment>
+    </>
   );
 }
+
+UsersList.propTypes = {
+  players: PropTypes.func.isRequired,
+  spectators: PropTypes.func.isRequired,
+};
+
+export default UsersList;

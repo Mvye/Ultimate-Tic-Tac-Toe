@@ -1,11 +1,19 @@
-import React from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-export function ListJoined(props) {
+function ListJoined(props) {
+  const { username } = props;
   return (
-    <React.Fragment>
+    <>
       <tr>
-        <td>{props.username}</td>
+        <td>{username}</td>
       </tr>
-    </React.Fragment>
+    </>
   );
 }
+
+ListJoined.propTypes = {
+  username: PropTypes.func.isRequired,
+};
+
+export default ListJoined;

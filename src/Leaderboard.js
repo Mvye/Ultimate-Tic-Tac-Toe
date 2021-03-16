@@ -1,8 +1,11 @@
-import "./Board.css";
-import React from "react";
-import { Player } from "./Player.js";
+import './Board.css';
+import React from 'react';
+import PropTypes from 'prop-types';
+import Player from './Player';
 
-export function Leaderboard(props) {
+function Leaderboard(props) {
+  const { leaderboard } = props;
+  const { username } = props;
   return (
     <table>
       <thead>
@@ -13,15 +16,22 @@ export function Leaderboard(props) {
         </tr>
       </thead>
       <tbody>
-        {props.leaderboard.map((item, index) => (
+        {leaderboard.map((item, index) => (
           <Player
             key={index}
-            user={props.username}
-            username={props.leaderboard[index].username}
-            score={props.leaderboard[index].score}
+            user={username}
+            username={leaderboard[index].username}
+            score={leaderboard[index].score}
           />
         ))}
       </tbody>
     </table>
   );
 }
+
+Leaderboard.propTypes = {
+  leaderboard: PropTypes.func.isRequired,
+  username: PropTypes.func.isRequired,
+};
+
+export default Leaderboard;

@@ -1,34 +1,34 @@
-import "./App.css";
-import "./Board.css";
-import { Board } from "./Board.js";
-import { Message } from "./Message.js";
-import { UsersList } from "./UsersList.js";
-import { calculateWinner } from "./calculateWinner.js";
-import { Leaderboard } from "./Leaderboard.js";
-import { useState, useRef, useEffect } from "react";
-import io from "socket.io-client";
+import './App.css';
+import './Board.css';
+import React, { useState, useRef, useEffect } from 'react';
+import io from 'socket.io-client';
+import Board from './Board';
+import Message from './Message';
+import UsersList from './UsersList';
+import calculateWinner from './calculateWinner';
+import Leaderboard from './Leaderboard';
 
 const socket = io(); // Connects to socket connection
 
-var sid;
+let sid;
 
-socket.on("connect", () => {
+socket.on('connect', () => {
   sid = socket.id;
   console.log(sid);
 });
 
 function App() {
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState('');
   const [players, setPlayers] = useState([]);
   const [spectators, setSpectators] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [leaderboardVisible, setLeaderboardVisibile] = useState(false);
   const [type, setType] = useState(-1);
-  const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
+  const [board, setBoard] = useState(['', '', '', '', '', '', '', '', '']);
   const [player, setPlayer] = useState(0);
-  const [next, setNext] = useState("X");
+  const [next, setNext] = useState('X');
   const [isClickable, setIsClickable] = useState(true);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const [gameEnd, setGameEnd] = useState(false);
   const [vote, setVote] = useState(0);
 
@@ -42,21 +42,19 @@ function App() {
   function onClickLogin() {
     if (loginRef !== null) {
       const pickedUsername = loginRef.current.value;
-      socket.emit("requestLogin", {
-        sid: sid,
+      socket.emit('requestLogin', {
+        sid,
         requestedUsername: pickedUsername,
       });
     }
   }
 
   function updateStates(index, placedPiece, nextPlayer, nextPiece) {
-    setBoard((prevList) =>
-      Object.assign([...prevList], { [index]: placedPiece })
-    );
+    setBoard((prevList) => Object.assign([...prevList], { [index]: placedPiece }));
     setPlayer(nextPlayer);
     setNext(nextPiece);
-    socket.emit("turn", {
-      index: index,
+    socket.emit('turn', {
+      index,
       piece: placedPiece,
       nextPiece: nextPlayer,
       nextNext: nextPiece,
@@ -66,13 +64,13 @@ function App() {
   function endGame(outcome) {
     setIsClickable(false);
     setGameEnd(true);
-    if (outcome !== "tie") {
-      const text = "The winner is " + players[player] + " (" + outcome + ")";
-      socket.emit("end", { outcome: outcome, text: text });
+    if (outcome !== 'tie') {
+      const text = `The winner is ${players[player]} (${outcome})`;
+      socket.emit('end', { outcome, text });
       setMessage(text);
     } else {
-      socket.emit("end", { outcome: outcome, text: "There was a " });
-      setMessage("There was a " + outcome);
+      socket.emit('end', { outcome, text: 'There was a ' });
+      setMessage(`There was a ${outcome}`);
     }
   }
 
@@ -80,12 +78,12 @@ function App() {
     if (!isClickable) {
       return;
     }
-    var boardAfterTurn = Object.assign([...board], { [index]: next });
-    if (board[index] === "" && type !== 2) {
+    const boardAfterTurn = Object.assign([...board], { [index]: next });
+    if (board[index] === '' && type !== 2) {
       if (type === 0) {
-        updateStates(index, "X", 1, "O");
+        updateStates(index, 'X', 1, 'O');
       } else {
-        updateStates(index, "O", 0, "X");
+        updateStates(index, 'O', 0, 'X');
       }
       const outcome = calculateWinner(boardAfterTurn);
       if (outcome !== null) {
@@ -98,12 +96,12 @@ function App() {
     if (type === 2) {
       return;
     }
-    socket.emit("vote", { username: username });
+    socket.emit('vote', { username });
   }
 
   useEffect(() => {
-    socket.on("approved", (data) => {
-      console.log("Login approved");
+    socket.on('approved', (data) => {
+      console.log('Login approved');
       console.log(data);
       setUsername(data.username);
       setPlayers(data.players);
@@ -114,54 +112,52 @@ function App() {
         setIsClickable(false);
       }
     });
-    socket.on("joined", (data) => {
-      console.log("New player joined");
+    socket.on('joined', (data) => {
+      console.log('New player joined');
       console.log(data);
       setPlayers(data.players);
       setSpectators(data.spectators);
       setLeaderboard(data.leaderboard);
     });
-    socket.on("turn", (data) => {
-      console.log("Turn event received!");
+    socket.on('turn', (data) => {
+      console.log('Turn event received!');
       console.log(data);
-      setBoard((prevList) =>
-        Object.assign([...prevList], { [data.index]: data.piece })
-      );
+      setBoard((prevList) => Object.assign([...prevList], { [data.index]: data.piece }));
       setPlayer(data.nextPiece);
       setNext(data.nextNext);
     });
-    socket.on("switch", (data) => {
-      console.log("Switching clickable");
+    socket.on('switch', () => {
+      console.log('Switching clickable');
       if (!endRef.current) {
         if (typeRef.current === 0 || typeRef.current === 1) {
           setIsClickable((prevClickable) => !prevClickable);
         }
       }
     });
-    socket.on("end", (data) => {
-      console.log("End event received!");
+    socket.on('end', (data) => {
+      console.log('End event received!');
       console.log(data);
       setIsClickable(false);
-      if (data.outcome === "tie") {
+      if (data.outcome === 'tie') {
         setMessage(data.text + data.outcome);
       } else {
         setMessage(data.text);
       }
       setGameEnd(true);
     });
-    socket.on("voting", (data) => {
-      console.log("Voting event received");
+    socket.on('voting', (data) => {
+      console.log('Voting event received');
       console.log(data);
       setVote(data.vote);
     });
-    socket.on("leaderboard", (data) => {
-      console.log("Leaderboard updated");
+    socket.on('leaderboard', (data) => {
+      console.log('Leaderboard updated');
       console.log(data);
       setLeaderboard(data.leaderboard);
     });
-    socket.on("again", (data) => {
-      console.log("Game is restarting");
-      setBoard(board);
+    socket.on('again', () => {
+      console.log('Game is restarting');
+      setBoard(['', '', '', '', '', '', '', '', '']);
       setPlayer(0);
       setNext(next);
       if (typeRef.current === 0) {
@@ -177,38 +173,45 @@ function App() {
       <div>
         <h2>Please pick a username to login!</h2>
         <input ref={loginRef} type="text" />
-        <button onClick={onClickLogin}>login</button>
-      </div>
-    );
-  } else {
-    return (
-      <div>
-        <h1>
-          {" "}
-          {players[0]} vs {players[1]}{" "}
-        </h1>
-        <Board board={board} click={(index) => onClickBox(index)} />
-        <Message
-          next={next}
-          player={player}
-          players={players}
-          end={gameEnd}
-          message={message}
-          vote={vote}
-          click={() => onClickPlayAgain()}
-        />
-        <UsersList players={players} spectators={spectators} />
-        <button
-          onClick={() => setLeaderboardVisibile((prevVisible) => !prevVisible)}
-        >
-          show/hide leaderboard
+        <button type="button" onClick={onClickLogin}>
+          login
         </button>
-        {leaderboardVisible && (
-          <Leaderboard username={username} leaderboard={leaderboard} />
-        )}
       </div>
     );
   }
+  return (
+    <div>
+      <h1>
+        {' '}
+        {players[0]}
+        {' '}
+        vs
+        {' '}
+        {players[1]}
+        {' '}
+      </h1>
+      <Board board={board} click={(index) => onClickBox(index)} />
+      <Message
+        next={next}
+        player={player}
+        players={players}
+        end={gameEnd}
+        message={message}
+        vote={vote}
+        click={() => onClickPlayAgain()}
+      />
+      <UsersList players={players} spectators={spectators} />
+      <button
+        type="button"
+        onClick={() => setLeaderboardVisibile((prevVisible) => !prevVisible)}
+      >
+        show/hide leaderboard
+      </button>
+      {leaderboardVisible && (
+        <Leaderboard username={username} leaderboard={leaderboard} />
+      )}
+    </div>
+  );
 }
 
 export default App;
