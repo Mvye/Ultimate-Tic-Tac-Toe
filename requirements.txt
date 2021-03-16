@@ -1,6 +1,6 @@
-flask
-flask-socketio
-flask-cors
-flask-sqlalchemy
+Flask
+Flask-SocketIO
+Flask-Cors
+Flask-SQLAlchemy
 psycopg2
 python-dotenv
