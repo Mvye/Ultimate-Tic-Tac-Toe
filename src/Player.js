@@ -27,9 +27,9 @@ function Player(props) {
 }
 
 Player.propTypes = {
-  user: PropTypes.func.isRequired,
-  username: PropTypes.func.isRequired,
-  score: PropTypes.func.isRequired,
+  user: PropTypes.string.isRequired,
+  username: PropTypes.string.isRequired,
+  score: PropTypes.number.isRequired,
 };
 
 export default Player;

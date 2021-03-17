@@ -11,6 +11,7 @@ function Board(props) {
       {board.map((item, index) => (
         <Square
           key={index}
+          index={index}
           click={() => {
             click(index);
           }}
@@ -22,7 +23,7 @@ function Board(props) {
 }
 
 Board.propTypes = {
-  board: PropTypes.func.isRequired,
+  board: PropTypes.arrayOf(PropTypes.string).isRequired,
   click: PropTypes.func.isRequired,
 };
 

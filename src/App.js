@@ -172,7 +172,7 @@ function App() {
     return (
       <div>
         <h2>Please pick a username to login!</h2>
-        <input ref={loginRef} type="text" />
+        <input ref={loginRef} type="text" aria-label="username-input" />
         <button type="button" onClick={onClickLogin}>
           login
         </button>

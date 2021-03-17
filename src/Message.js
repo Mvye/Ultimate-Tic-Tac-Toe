@@ -41,13 +41,13 @@ function Message(props) {
 }
 
 Message.propTypes = {
-  end: PropTypes.func.isRequired,
-  message: PropTypes.func.isRequired,
+  end: PropTypes.bool.isRequired,
+  message: PropTypes.string.isRequired,
   click: PropTypes.func.isRequired,
-  vote: PropTypes.func.isRequired,
-  players: PropTypes.func.isRequired,
-  player: PropTypes.func.isRequired,
-  next: PropTypes.func.isRequired,
+  vote: PropTypes.number.isRequired,
+  players: PropTypes.arrayOf(PropTypes.string).isRequired,
+  player: PropTypes.number.isRequired,
+  next: PropTypes.string.isRequired,
 };
 
 export default Message;

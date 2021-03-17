@@ -28,8 +28,8 @@ function UsersList(props) {
 }
 
 UsersList.propTypes = {
-  players: PropTypes.func.isRequired,
-  spectators: PropTypes.func.isRequired,
+  players: PropTypes.arrayOf(PropTypes.string).isRequired,
+  spectators: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default UsersList;

@@ -16,9 +16,9 @@ function Square(props) {
 }
 
 Square.propTypes = {
-  index: PropTypes.func.isRequired,
+  index: PropTypes.number.isRequired,
   click: PropTypes.func.isRequired,
-  piece: PropTypes.func.isRequired,
+  piece: PropTypes.string.isRequired,
 };
 
 export default Square;

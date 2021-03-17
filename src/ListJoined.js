@@ -13,7 +13,7 @@ function ListJoined(props) {
 }
 
 ListJoined.propTypes = {
-  username: PropTypes.func.isRequired,
+  username: PropTypes.string.isRequired,
 };
 
 export default ListJoined;
