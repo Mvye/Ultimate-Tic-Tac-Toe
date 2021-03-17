@@ -77,8 +77,8 @@ def create_player_data(status, username, leaderboard):
 
 def get_leaderboard():
     '''Gets players from database sorted descending by score'''
-    users = DB.session.query(models.Player).order_by(
-        models.Player.score.desc())
+    users = DB.session.query(models.Gamer).order_by(
+        models.Gamer.score.desc())
     leaderboard = []
     for i in users:
         leaderboard.append({"username": i.username, "score": i.score})
@@ -88,13 +88,13 @@ def get_leaderboard():
 
 def add_to_database(username):
     '''Adds newly joined player to the database if first time login'''
-    player_search = models.Player.query.filter_by(username=username).first()
+    player_search = models.Gamer.query.filter_by(username=username).first()
     if player_search is None:
-        new_player = models.Player(username=username, score=100)
+        new_player = models.Gamer(username=username, score=100)
         DB.session.add(new_player)
         DB.session.commit()
     else:
-        print(models.Player.query.filter_by(username=username).first().score)
+        print(models.Gamer.query.filter_by(username=username).first().score)
 
 
 @SOCKETIO.on('requestLogin')
@@ -128,9 +128,9 @@ def on_turn(data):
 def update_scores(outcome):
     '''Gives the winning player +1 to their score and the losing player -1'''
     player_x = DB.session.query(
-        models.Player).filter_by(username=PLAYERS[0]).first()
+        models.Gamer).filter_by(username=PLAYERS[0]).first()
     player_o = DB.session.query(
-        models.Player).filter_by(username=PLAYERS[1]).first()
+        models.Gamer).filter_by(username=PLAYERS[1]).first()
     if outcome == "X":
         player_x.score = player_x.score + 1
         player_o.score = player_o.score - 1
