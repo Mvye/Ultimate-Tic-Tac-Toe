@@ -63,6 +63,7 @@ def update_status(username):
     SPECTATORS.append(username)
     return 2
 
+
 def create_player_data(status, username, leaderboard):
     '''Creates dictionary with current players, spectators, and client's status'''
     data = {
@@ -77,8 +78,7 @@ def create_player_data(status, username, leaderboard):
 
 def get_leaderboard():
     '''Gets players from database sorted descending by score'''
-    users = DB.session.query(models.Gamer).order_by(
-        models.Gamer.score.desc())
+    users = DB.session.query(models.Gamer).order_by(models.Gamer.score.desc())
     leaderboard = []
     for i in users:
         leaderboard.append({"username": i.username, "score": i.score})
@@ -86,15 +86,21 @@ def get_leaderboard():
     return leaderboard
 
 
-def add_to_database(username):
-    '''Adds newly joined player to the database if first time login'''
+def check_if_in_database(username):
+    '''Checks if username is already in the database'''
     player_search = models.Gamer.query.filter_by(username=username).first()
-    if player_search is None:
-        new_player = models.Gamer(username=username, score=100)
-        DB.session.add(new_player)
-        DB.session.commit()
-    else:
-        print(models.Gamer.query.filter_by(username=username).first().score)
+    return player_search
+
+
+def add_to_database(username):
+    '''Adds gamer with given username to database'''
+    new_player = models.Gamer(username=username, score=100)
+    DB.session.add(new_player)
+    DB.session.commit()
+    users = []
+    for gamer in models.Gamer.query.all():
+        users.append(gamer.username)
+    return users
 
 
 @SOCKETIO.on('requestLogin')
@@ -103,18 +109,19 @@ def on_request_login(data):
     sends updated lists to all users, sends client their status'''
     username = data["requestedUsername"]
     sid = data["sid"]
-    add_to_database(username)
+    if check_if_in_database(username) is None:
+        add_to_database(username)
     leaderboard = get_leaderboard()
+    status = update_status(username)
+    SOCKETIO.emit('approved',
+                  create_player_data(status, username, leaderboard),
+                  room=sid)
     new_data = {
         "players": PLAYERS,
         "spectators": SPECTATORS,
         "leaderboard": leaderboard
     }
-    status = update_status(username)
     SOCKETIO.emit('joined', new_data, broadcast=True, include_self=False)
-    SOCKETIO.emit('approved',
-                  create_player_data(status, username, leaderboard),
-                  room=sid)
 
 
 @SOCKETIO.on('turn')
@@ -124,13 +131,16 @@ def on_turn(data):
     SOCKETIO.emit('turn', data, broadcast=True, include_self=False)
     SOCKETIO.emit('switch', data, broadcast=True, include_self=True)
 
-
-def update_scores(outcome):
-    '''Gives the winning player +1 to their score and the losing player -1'''
+def get_players():
+    '''Gets the two players from database'''
     player_x = DB.session.query(
         models.Gamer).filter_by(username=PLAYERS[0]).first()
     player_o = DB.session.query(
         models.Gamer).filter_by(username=PLAYERS[1]).first()
+    return [player_x, player_o]
+
+def update_scores(outcome, player_x, player_o):
+    '''Gives the winning player +1 to their score and the losing player -1'''
     if outcome == "X":
         player_x.score = player_x.score + 1
         player_o.score = player_o.score - 1
@@ -150,7 +160,8 @@ VOTED = []
 def on_end(data):
     '''After game is over, emits the updated board to all other users and triggers voting'''
     print(str(data))
-    update_scores(data["outcome"])
+    players = get_players()
+    update_scores(data["outcome"], players[0], players[1])
     leaderboard = get_leaderboard()
     votes = {"vote": len(VOTED)}
     SOCKETIO.emit('end', data, broadcast=True, include_self=False)
