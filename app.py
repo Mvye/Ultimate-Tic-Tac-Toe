@@ -131,6 +131,7 @@ def on_turn(data):
     SOCKETIO.emit('turn', data, broadcast=True, include_self=False)
     SOCKETIO.emit('switch', data, broadcast=True, include_self=True)
 
+
 def get_players():
     '''Gets the two players from database'''
     player_x = DB.session.query(
@@ -138,6 +139,7 @@ def get_players():
     player_o = DB.session.query(
         models.Gamer).filter_by(username=PLAYERS[1]).first()
     return [player_x, player_o]
+
 
 def update_scores(outcome, player_x, player_o):
     '''Gives the winning player +1 to their score and the losing player -1'''
@@ -151,6 +153,7 @@ def update_scores(outcome, player_x, player_o):
         DB.session.commit()
     print("Player X score: " + str(player_x.score) + " Player O score: " +
           str(player_o.score))
+    return [player_x.score, player_o.score]
 
 
 VOTED = []
