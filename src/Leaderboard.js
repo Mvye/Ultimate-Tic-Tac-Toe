@@ -30,10 +30,12 @@ function Leaderboard(props) {
 }
 
 Leaderboard.propTypes = {
-  leaderboard: PropTypes.arrayOf(PropTypes.shape({
-    score: PropTypes.number.isRequired,
-    username: PropTypes.string.isRequired,
-  })).isRequired,
+  leaderboard: PropTypes.arrayOf(
+    PropTypes.shape({
+      score: PropTypes.number.isRequired,
+      username: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
   username: PropTypes.string.isRequired,
 };
 
