@@ -1,4 +1,4 @@
-# Project 2 Milestone 2
+# Project 2 Milestone 3
 
 This is a tic tac toe game made with react.
 
