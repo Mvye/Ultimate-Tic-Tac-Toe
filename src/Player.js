@@ -10,8 +10,8 @@ function Player(props) {
     return (
       <>
         <tr>
-          <td className="currentUser">{username}</td>
-          <td className="currentUser">{score}</td>
+          <td className="currentUser" aria-label="current-user" >{username}</td>
+          <td className="currentUser" >{score}</td>
         </tr>
       </>
     );
