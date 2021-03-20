@@ -131,6 +131,11 @@ def on_turn(data):
     SOCKETIO.emit('turn', data, broadcast=True, include_self=False)
     SOCKETIO.emit('switch', data, broadcast=True, include_self=True)
 
+@SOCKETIO.on('taken')
+def on_taken(data):
+    '''When a big box is taken, emits updated big board to all other users'''
+    print(str(data))
+    SOCKETIO.emit('taken', data, broadcast=True, include_self=False)
 
 def get_players():
     '''Gets the two players from database'''

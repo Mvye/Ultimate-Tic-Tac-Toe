@@ -110,9 +110,14 @@ function App() {
     }
   }
 
-  function declareBigBox(bigIndex, outcome) {
+  function declareBigBox(bigIndex, index, outcome) {
     const boardAfterTurn = Object.assign([...bigBoard], { [bigIndex]: outcome });
     setBigBoard((prevList) => Object.assign([...prevList], { [bigIndex]: outcome }));
+    if (bigIndex === index) {
+      socket.emit('taken', { bigBoard: boardAfterTurn, isAllClickable: true });
+    } else {
+      socket.emit('taken', { bigBoard: boardAfterTurn, isAllClickable: false });
+    }
     const bigOutcome = calculateWinner(boardAfterTurn);
     if (bigOutcome !== null) {
       endGame(bigOutcome);
@@ -123,10 +128,10 @@ function App() {
     if (!isClickable) {
       return;
     }
-    if (bigBoard[bigIndex] !== '') {
+    if (boardClickable !== 9 && boardClickable !== bigIndex) {
       return;
     }
-    if (boardClickable !== 9 && boardClickable !== bigIndex) {
+    if (bigBoard[bigIndex] !== '') {
       return;
     }
     const boardAfterTurn = Object.assign([...board], {
@@ -146,7 +151,7 @@ function App() {
       }
       const outcome = calculateWinner(boardAfterTurn[bigIndex]);
       if (outcome !== null) {
-        declareBigBox(bigIndex, outcome);
+        declareBigBox(bigIndex, index, outcome);
       }
     }
   }
@@ -202,6 +207,13 @@ function App() {
             } should be clickable.`,
           );
         }
+      }
+    });
+    socket.on('taken', (data) => {
+      console.log('Big Box taken');
+      setBigBoard(data.bigBoard);
+      if (data.isAllClickable) {
+        setBoardClickable(9);
       }
     });
     socket.on('end', (data) => {
