@@ -1,8 +1,11 @@
 .big-board {
   width: 600px;
   height: 600px;
-  display: grid; /* Enables CSS Grid */ 
-  grid-template-columns: repeat(3, 1fr); /* Total horizontal space broken into 3 columns */
+  display: grid; /* Enables CSS Grid */
+  grid-template-columns: repeat(
+    3,
+    1fr
+  ); /* Total horizontal space broken into 3 columns */
   grid-template-rows: repeat(3, 1fr);
   margin: auto;
 }
@@ -18,52 +21,53 @@
 }
 
 body {
-	background: #b2e7eb;
-	text-align: center;
+  background: #b2e7eb;
+  text-align: center;
 }
 
 .currentUser {
-    background-color: #a2dbac;
-    border-bottom: 1px solid black;
+  background-color: #a2dbac;
+  border-bottom: 1px solid black;
 }
 
 .leaderboard {
-    border-bottom: 1px solid black;
+  border-bottom: 1px solid black;
 }
 
 li {
-	list-style-type: none;
+  list-style-type: none;
 }
 
 .small-board {
-    background: #ffd496;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    margin: 11% auto;
-    width: 80%;
-    height: 80%;
+  background: #ffd496;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  margin: 11% auto;
+  width: 80%;
+  height: 80%;
 }
 
 .small-box {
-	align-items: center;
-	border: 1px solid #fab552;
-    display: flex;
-    font-size: 35px;
-    justify-content: center;
+  align-items: center;
+  border: 1px solid #fab552;
+  display: flex;
+  font-size: 35px;
+  justify-content: center;
 }
 
 table {
-    border-collapse: collapse;
-    margin-left:auto; 
-    margin-right:auto;
-    table-layout: fixed;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  table-layout: fixed;
 }
 
-th, td {
-    padding: 4px;
+th,
+td {
+  padding: 4px;
 }
 
 .userHeaders {
-    font-weight: bold;
+  font-weight: bold;
 }

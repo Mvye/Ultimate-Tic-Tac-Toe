@@ -1,23 +1,37 @@
 import './Board.css';
 import React from 'react';
+import PropTypes from 'prop-types';
 
-export function Player(props) {
-    if (props.user === props.username) {
-        return (
-            <React.Fragment>
-                <tr>
-                    <td className="currentUser">{props.username}</td>
-                    <td className="currentUser">{props.score}</td>
-                </tr>
-            </React.Fragment>
-        );
-    }
+function Player(props) {
+  const { user } = props;
+  const { username } = props;
+  const { score } = props;
+  if (user === username) {
     return (
-        <React.Fragment>
-            <tr>
-                <td className="leaderboard">{props.username}</td>
-                <td className="leaderboard">{props.score}</td>
-            </tr>
-        </React.Fragment>
+      <>
+        <tr>
+          <td className="currentUser" aria-label="current-user">
+            {username}
+          </td>
+          <td className="currentUser">{score}</td>
+        </tr>
+      </>
     );
+  }
+  return (
+    <>
+      <tr>
+        <td className="leaderboard">{username}</td>
+        <td className="leaderboard">{score}</td>
+      </tr>
+    </>
+  );
 }
+
+Player.propTypes = {
+  user: PropTypes.string.isRequired,
+  username: PropTypes.string.isRequired,
+  score: PropTypes.number.isRequired,
+};
+
+export default Player;
