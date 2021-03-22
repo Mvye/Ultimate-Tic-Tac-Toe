@@ -10,7 +10,8 @@ function BigBox(props) {
   const { board } = props;
   const { boardClickable } = props;
   const { click } = props;
-  const className = bigBoxClassifier(bigBoardStatus, boardClickable, bigIndex);
+  const { isClickable } = props;
+  const className = bigBoxClassifier(bigBoardStatus, boardClickable, bigIndex, isClickable);
   if (className === 'big-box') {
     return (
       <div>
@@ -31,6 +32,7 @@ BigBox.propTypes = {
   board: PropTypes.arrayOf(PropTypes.string).isRequired,
   boardClickable: PropTypes.number.isRequired,
   click: PropTypes.func.isRequired,
+  isClickable: PropTypes.bool.isRequired,
 };
 
 export default BigBox;

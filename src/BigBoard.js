@@ -8,6 +8,7 @@ function BigBoard(props) {
   const { board } = props;
   const { boardClickable } = props;
   const { click } = props;
+  const { isClickable } = props;
   return (
     <div className="big-board">
       {board.map((item, index) => (
@@ -18,6 +19,7 @@ function BigBoard(props) {
           board={board[index]}
           boardClickable={boardClickable}
           click={click}
+          isClickable={isClickable}
         />
       ))}
     </div>
@@ -29,6 +31,7 @@ BigBoard.propTypes = {
   board: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
   boardClickable: PropTypes.number.isRequired,
   click: PropTypes.func.isRequired,
+  isClickable: PropTypes.bool.isRequired,
 };
 
 export default BigBoard;

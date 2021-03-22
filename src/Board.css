@@ -10,8 +10,12 @@
   margin: auto;
 }
 
-.big-box.clickable {
+.big-box.clickable-me {
   background: #fff02b;
+}
+
+.big-box.clickable-others {
+  background: #fff78f;
 }
 
 .big-box.middle-horizontal {

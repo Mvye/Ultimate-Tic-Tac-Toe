@@ -296,6 +296,7 @@ function App() {
         board={board}
         boardClickable={boardClickable}
         click={(bigIndex, index) => onClickBox(bigIndex, index)}
+        isClickable={isClickable}
       />
       <Message
         next={next}

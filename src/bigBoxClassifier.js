@@ -1,4 +1,4 @@
-function bigBoxClassifier(bigBoardStatus, boardClickable, bigIndex) {
+function bigBoxClassifier(bigBoardStatus, boardClickable, bigIndex, isClickable) {
   let className = 'big-box';
   if (bigIndex === 1 || bigIndex === 7 || bigIndex === 4) {
     className = `${className} middle-verticle`;
@@ -6,8 +6,12 @@ function bigBoxClassifier(bigBoardStatus, boardClickable, bigIndex) {
   if (bigIndex === 3 || bigIndex === 5 || bigIndex === 4) {
     className = `${className} middle-horizontal`;
   }
-  if (bigBoardStatus === '' && (boardClickable === bigIndex || boardClickable === 9)) {
-    className = `${className} clickable`;
+  if (isClickable) {
+    if (bigBoardStatus === '' && (boardClickable === bigIndex || boardClickable === 9)) {
+      className = `${className} clickable-me`;
+    }
+  } else if (bigBoardStatus === '' && (boardClickable === bigIndex || boardClickable === 9)) {
+    className = `${className} clickable-others`;
   }
   return className;
 }
