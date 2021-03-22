@@ -28,6 +28,14 @@
   border-right: 2px solid black;
 }
 
+.big-box.playerx {
+  background: #ebb6b2;
+}
+
+.big-box.playero {
+  background: #b6b2eb;
+}
+
 body {
   background: #b2e7eb;
   text-align: center;
@@ -87,6 +95,7 @@ li {
 .small-box {
   align-items: center;
   border: 1px solid #fab552;
+  color: black;
   display: flex;
   font-size: 35px;
   justify-content: center;
@@ -94,7 +103,8 @@ li {
 
 .small-box.playerx {
   align-items: center;
-  border: 1px solid #740000;
+  border: 1px solid #fab552;
+  color: #740000;
   display: flex;
   font-size: 35px;
   justify-content: center;
@@ -102,7 +112,8 @@ li {
 
 .small-box.playero {
   align-items: center;
-  border: 1px solid #5e3fa8;
+  border: 1px solid #fab552;
+  color: #5e3fa8;
   display: flex;
   font-size: 35px;
   justify-content: center;

@@ -6,7 +6,11 @@ function bigBoxClassifier(bigBoardStatus, boardClickable, bigIndex, isClickable)
   if (bigIndex === 3 || bigIndex === 5 || bigIndex === 4) {
     className = `${className} middle-horizontal`;
   }
-  if (isClickable) {
+  if (bigBoardStatus === 'X') {
+    className = `${className} playerx`;
+  } else if (bigBoardStatus === 'O') {
+    className = `${className} playero`;
+  } else if (isClickable) {
     if (bigBoardStatus === '' && (boardClickable === bigIndex || boardClickable === 9)) {
       className = `${className} clickable-me`;
     }
