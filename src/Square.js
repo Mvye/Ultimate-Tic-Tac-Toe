@@ -6,6 +6,23 @@ function Square(props) {
   const { index } = props;
   const { click } = props;
   const { piece } = props;
+  if (piece === 'X') {
+    return (
+      <div key={index} className="small-box playerx" onClick={click} aria-hidden="true">
+        {' '}
+        {piece}
+        {' '}
+      </div>
+    );
+  } if (piece === 'O') {
+    return (
+      <div key={index} className="small-box playero" onClick={click} aria-hidden="true">
+        {' '}
+        {piece}
+        {' '}
+      </div>
+    );
+  }
   return (
     <div key={index} className="small-box" onClick={click} aria-hidden="true">
       {' '}
