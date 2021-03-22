@@ -2,44 +2,35 @@ import './Board.css';
 import React from 'react';
 import PropTypes from 'prop-types';
 import Board from './Board';
+import bigBoxClassifier from './bigBoxClassifier';
 
 function BigBox(props) {
-  const { click } = props;
-  const { board } = props;
+  const { bigBoardStatus } = props;
   const { bigIndex } = props;
-  if (bigIndex === 1 || bigIndex === 7) {
+  const { board } = props;
+  const { boardClickable } = props;
+  const { click } = props;
+  const className = bigBoxClassifier(bigBoardStatus, boardClickable, bigIndex);
+  if (className === 'big-box') {
     return (
-      <div className="big-box middle-verticle">
+      <div>
         <Board click={click} board={board} bigIndex={bigIndex} />
       </div>
     );
   }
-  if (bigIndex === 3 || bigIndex === 5) {
-    return (
-      <div className="big-box middle-horizontal">
-        <Board click={click} board={board} bigIndex={bigIndex} />
-      </div>
-    );
-  }
-  if (bigIndex === 4) {
-    return (
-      <div className="big-box middle-verticle middle-horizontal">
-        <Board click={click} board={board} bigIndex={bigIndex} />
-      </div>
-    );
-  }
-
   return (
-    <div>
+    <div className={className}>
       <Board click={click} board={board} bigIndex={bigIndex} />
     </div>
   );
 }
 
 BigBox.propTypes = {
-  board: PropTypes.arrayOf(PropTypes.string).isRequired,
-  click: PropTypes.func.isRequired,
+  bigBoardStatus: PropTypes.string.isRequired,
   bigIndex: PropTypes.number.isRequired,
+  board: PropTypes.arrayOf(PropTypes.string).isRequired,
+  boardClickable: PropTypes.number.isRequired,
+  click: PropTypes.func.isRequired,
 };
 
 export default BigBox;

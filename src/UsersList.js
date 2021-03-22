@@ -10,13 +10,13 @@ function UsersList(props) {
       <table>
         <tbody>
           <tr>
-            <td className="userHeaders"> Players: </td>
+            <td className="user-headers"> Players: </td>
           </tr>
           {players.map((player, index) => (
             <ListJoined key={index} username={player} />
           ))}
           <tr>
-            <td className="userHeaders"> Spectators: </td>
+            <td className="user-headers"> Spectators: </td>
           </tr>
           {spectators.map((spectator, index) => (
             <ListJoined key={index} username={spectators} />

@@ -284,15 +284,17 @@ function App() {
     <div>
       <h1>
         {' '}
-        {players[0]}
+        <span className="playerx">{players[0]}</span>
         {' '}
         vs
         {' '}
-        {players[1]}
+        <span className="playero">{players[1]}</span>
         {' '}
       </h1>
       <BigBoard
+        bigBoard={bigBoard}
         board={board}
+        boardClickable={boardClickable}
         click={(bigIndex, index) => onClickBox(bigIndex, index)}
       />
       <Message

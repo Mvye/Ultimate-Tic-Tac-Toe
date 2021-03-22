@@ -10,6 +10,10 @@
   margin: auto;
 }
 
+.big-box.clickable {
+  background: #fff02b;
+}
+
 .big-box.middle-horizontal {
   border-top: 2px solid black;
   border-bottom: 2px solid black;
@@ -25,7 +29,7 @@ body {
   text-align: center;
 }
 
-.currentUser {
+.current-user {
   background-color: #a2dbac;
   border-bottom: 1px solid black;
 }
@@ -38,8 +42,36 @@ li {
   list-style-type: none;
 }
 
+.playerx {
+  color: #ebb6b2;
+}
+
+.playero {
+  color: #b6b2eb;
+}
+
 .small-board {
   background: #ffd496;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  margin: 11% auto;
+  width: 80%;
+  height: 80%;
+}
+
+.small-board.playerx {
+  background: #ebb6b2;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  margin: 11% auto;
+  width: 80%;
+  height: 80%;
+}
+
+.small-board.playero {
+  background: #b6b2eb;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
@@ -51,6 +83,22 @@ li {
 .small-box {
   align-items: center;
   border: 1px solid #fab552;
+  display: flex;
+  font-size: 35px;
+  justify-content: center;
+}
+
+.small-box.playerx {
+  align-items: center;
+  border: 1px solid #740000;
+  display: flex;
+  font-size: 35px;
+  justify-content: center;
+}
+
+.small-box.playero {
+  align-items: center;
+  border: 1px solid #5e3fa8;
   display: flex;
   font-size: 35px;
   justify-content: center;
@@ -68,6 +116,6 @@ td {
   padding: 4px;
 }
 
-.userHeaders {
+.user-headers {
   font-weight: bold;
 }
